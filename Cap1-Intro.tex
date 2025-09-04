@@ -1,11 +1,166 @@
 \chapter{Introdução} \label{cap:introducao}
 
+\begin{align}
+    y(n) &= \mathbf{w}^{\top}(n-1)\mathbf{x}(n),\\
+    e(n) &= d(n) - y(n),\\
+    \mathbf{w}(n) &= \mathbf{w}(n-1) + \mu e(n)\mathbf{x}(n),
+\end{align}
+
 \section{Espaços de Hilbert do \textit{kernel} reprodutivo}
+
+\begin{equation}
+    \mathcal{H}_{\kappa} = \operatorname{span}\{\kappa(\mathbf{x},.), \forall \mathbf{x}\in \mathbb{R}^M\},
+\end{equation}
 
 \section{Filtros adaptativos \textit{kernel}}
 
+\begin{equation}
+    \mathbf{x}_i \rightarrow \kappa(\mathbf{x}_i,.),
+\end{equation}
+
+
+\begin{equation}
+    \langle \kappa(\mathbf{x}_i,.), \kappa(\mathbf{x}_j,.) \rangle_{\mathcal{H}} = \kappa(\mathbf{x}_i, \mathbf{x}_j).
+\end{equation}
+
+\begin{align}
+    \mathbf{w}(n-1) &= \sum_{i=1}^{n-1}\mu e(i)\kappa(\mathbf{x}(i),.)\label{eq:klms_w}\\
+    y(n) &= \sum_{i=1}^{n-1}\mu e(i)\kappa(\mathbf{x}(i),\mathbf{x}(n))\label{eq:klms_y}\\
+    e(n) &= d(n) - y(n)\\
+    \mathbf{w}(n) &= \mathbf{w}(n-1) +\mu e(n)\kappa(\mathbf{x}(n),.).
+\end{align}
+
 \section{Esparsificação de dicionários}
 
+\begin{equation}
+    \min_{\mathbf{r}_i \in \mathcal{D}} ||\mathbf{x}(n) - \mathbf{r}_i||>\varepsilon_{NC},
+\end{equation}
+
+\begin{equation}
+    \min_{\mathbf{r}_i \in \mathcal{D}} \kappa(\mathbf{r}_i,\mathbf{x}(n)) < \varepsilon_{CC},
+\end{equation}
+
+
+
 \section{GS-KLMS}
+
+\begin{align}
+    \boldsymbol{\beta}_1 &= \frac{\kappa(\mathbf{r}_1,.)}{||\kappa(\mathbf{r}_1,.)||},\label{eq:beta_1}\\
+    \boldsymbol{\beta}_i &= \frac{\boldsymbol{\gamma}_i}{||\boldsymbol{\gamma}_i||}, \label{eq:beta_i}\\ 
+    \boldsymbol{\gamma}_i &= \kappa(\mathbf{r}_i,.) - \sum_{j=1}^{i-1}\langle\kappa(\mathbf{r}_i,.),\boldsymbol{\beta}_j\rangle_{\mathcal{H}}\boldsymbol{\beta}_j.\label{eq:gamma_i}
+\end{align}
+
+\begin{equation}
+    \boldsymbol{\beta}_i = \sum_{j=1}^{i} h_{ij}\kappa(\mathbf{r}_j,.).
+\end{equation}
+
+\begin{equation}
+    \kappa(\mathbf{x}(n),.) = \mathbf{p}_{\mathcal{B}} + \mathbf{p}_{\mathcal{B}^{\perp}},
+\end{equation}
+
+\begin{equation}
+    ||\kappa(\mathbf{x}(n),.)||^2 = ||\mathbf{p}_\mathcal{B}||^2 + ||\mathbf{p}_{\mathcal{B}^{\perp}}||^2,
+\end{equation}
+
+\begin{equation}
+    ||\mathbf{p}_\mathcal{B}||^2 = 1 - ||\mathbf{p}_{\mathcal{B}^{\perp}}||^2.
+\end{equation}
+
+\begin{equation}
+    ||\mathbf{p}_{\mathcal{B}^{\perp}}||^2 < \varepsilon,
+\end{equation}
+
+\begin{equation}
+    ||\mathbf{p}_\mathcal{B}||^2 > 1 - \varepsilon^2,
+\end{equation}
+
+\begin{equation}
+    ||\mathbf{p}_\mathcal{B}||^2 < 1 - \varepsilon^2,
+\end{equation}
+
+\begin{figure}
+    \centering
+    \begin{subfigure}[b]{0.4\linewidth}
+        \centering
+        \begin{tikzpicture}
+            \coordinate (O) at (0,0,0);
+            \def\rvec{1.2}
+            \def\thetavec{45}
+            \def\phivec{45}
+            \def\w{0.2}
+            \tdplotsetcoord{O'}{0.04}{\thetavec}{\phivec} % shifted
+            \tdplotsetcoord{O''}{0.1}{90}{\phivec} % shifted
+            \tdplotsetcoord{P}{\rvec}{\thetavec}{\phivec}
+            %\draw[axis] (0,0.02,0) -- (0,1,0) node[below right]{$z$};
+            \draw[axis] (0,0,0.02) -- (0,0,1) node[below right]{$\beta_1$};
+            \draw[axis] (0.02,0,0) -- (1,0,0) node[below right]{$\beta_2$};
+            %\draw[->,red,line cap=round] (O'') -- (Pxy) node[anchor=130] {$\vv{p}_\mathrm{T}$};
+            \draw[dashed,red,line join=round] (Pxz) -- (P);
+            \draw[->,red,line cap=round] (O') -- (P) node[anchor=-30] {$\vv{p}$};
+            \draw[-,blue,line cap=round] (Pxz) -- (O') node[anchor=-30] {};
+            \draw[dashed,blue,line cap=round] (Pxz) -- (Px) node[anchor=-30] {};
+            \draw[dashed,blue,line cap=round] (Pxz) -- (Pz) node[anchor=-30] {};
+        \end{tikzpicture}
+        \caption{inadequate}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.4\linewidth}
+        \centering
+        \begin{tikzpicture}
+            \coordinate (O) at (0,0,0);
+            \def\rvec{1.2}
+            \def\thetavec{45}
+            \def\phivec{15}
+            \def\w{0.2}
+            \tdplotsetcoord{O'}{0.04}{\thetavec}{\phivec} % shifted
+            \tdplotsetcoord{O''}{0.1}{90}{\phivec} % shifted
+            \tdplotsetcoord{P}{\rvec}{\thetavec}{\phivec}
+            %\draw[axis] (0,0.02,0) -- (0,1,0) node[below right]{$z$};
+            \draw[axis] (0,0,0.02) -- (0,0,1) node[below right]{$\beta_1$};
+            \draw[axis] (0.02,0,0) -- (1,0,0) node[below right]{$\beta_2$};
+            %\draw[->,red,line cap=round] (O'') -- (Pxy) node[anchor=130] {$\vv{p}_\mathrm{T}$};
+            \draw[dashed,red,line join=round] (Pxz) -- (P);
+            \draw[->,red,line cap=round] (O') -- (P) node[above] {$\vv{p}$};
+            \draw[-,blue,line cap=round] (Pxz) -- (O') node[anchor=-30] {};
+            \draw[dashed,blue,line cap=round] (Pxz) -- (Px) node[anchor=-30] {};
+            \draw[dashed,blue,line cap=round] (Pxz) -- (Pz) node[anchor=-30] {};
+        \end{tikzpicture}
+        \caption{adequate}
+    \end{subfigure} 
+    \caption{Two possibilities of the projection}
+    \label{fig:proj}
+\end{figure}
+
+\begin{align}
+    \tilde{\mathbf{p}}_\mathcal{B}(n) &= \begin{bmatrix}
+        \langle\kappa(\mathbf{x}(n),.),\boldsymbol{\beta}_1\rangle_\mathcal{H}\\
+        \langle\kappa(\mathbf{x}(n),.),\boldsymbol{\beta}_2\rangle_\mathcal{H}\\
+        \vdots\\
+        \langle\kappa(\mathbf{x}(n),.),\boldsymbol{\beta}_N\rangle_\mathcal{H}\\
+    \end{bmatrix} \\&= \begin{bmatrix}
+        \langle\kappa(\mathbf{x}(n),.),\sum_{j=1}^{1}h_{1j}\kappa(\mathbf{r}_j,.)\rangle_\mathcal{H}\\
+        \langle\kappa(\mathbf{x}(n),.),\sum_{j=1}^{2}h_{2j}\kappa(\mathbf{r}_j,.)\rangle_\mathcal{H}\\
+        \vdots\\
+        \langle\kappa(\mathbf{x}(n),.),\sum_{j=1}^{1}h_{Nj}\kappa(\mathbf{r}_j,.)\rangle_\mathcal{H}\\
+    \end{bmatrix},      
+\end{align}
+
+\begin{equation}
+    \tilde{\mathbf{p}}_{\mathcal{B}}(n) =\mathbf{H}\boldsymbol{\kappa}(\mathbf{x}(n)),
+\end{equation}
+
+\begin{equation}
+    \boldsymbol{\kappa}(\mathbf{x}(n)) = \begin{bmatrix}
+        \kappa(\mathbf{x}(n),\mathbf{r}_1)\\
+        \kappa(\mathbf{x}(n),\mathbf{r}_2)\\
+        \vdots\\
+        \kappa(\mathbf{x}(n),\mathbf{r}_N)\\
+    \end{bmatrix}.      
+\end{equation}
+
+\begin{align}
+    y(n) &= \mathbf{w}^{\top}(n-1)\tilde{\mathbf{p}}_{\mathcal{B}}(n)\\
+    e(n) &= d(n) - y(n)\\
+    \mathbf{w}(n) &= \mathbf{w}(n-1) + \mu e(n)\tilde{\mathbf{p}}_{\mathcal{B}}(n).
+\end{align}
 
 \section{Estrutura do trabalho}
