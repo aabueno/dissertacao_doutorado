@@ -2,12 +2,242 @@
 
 \section{Grids cartesianos}
 
+\begin{equation}
+    \mathcal{D} = \{ \mathbf{r}_i = \rho\mathbf{z}_i\;|\;\rho \in \mathbb{R}, \mathbf{z}_i \in \mathbb{Z}^M \},
+\end{equation}
+
 \section{\textit{Kernels} adequados à grids cartesianos}
 
 \subsection{\textit{Kernel} gaussiano}
 
+\begin{equation}
+    \kappa(\mathbf{x},\mathbf{y}) = e^{-\frac{||\mathbf{x} - \mathbf{y}||^2}{2\sigma^2}}
+\end{equation}
+
+\begin{equation*}
+  \kappa(\mathbf{x},\mathbf{x}) = 1, \forall \mathbf{x} \in \mathcal{X},  
+\end{equation*}
+
+\begin{equation*}
+    \kappa(\mathbf{x},\mathbf{y}) = \phi(||\mathbf{x} - \mathbf{y}||),
+\end{equation*}
+
+\begin{equation}
+    e^{-\frac{||\mathbf{x} - \mathbf{y}||^2}{2\sigma^2}} = e^{-\frac{\sum_{i=1}^{M}(x_i-y_i)^2}{2\sigma^2}} = \prod_{i=1}^{M}e^{-\frac{(x_i-y_i)^2}{2\sigma^2}},
+\end{equation}
+
+\begin{equation}
+    \operatorname{supp}_{f(.)} = \{ \mathbf{x} \in \mathcal{X} | f(\mathbf{x}) \neq 0 \},
+\end{equation}
+
 \subsection{\textit{Kernel} produto tensorial de sincs}
+
+\begin{equation}
+\kappa(x,y) = \operatorname{sinc}\left( \frac{x-y}{\sigma}\right),
+\end{equation}
+
+\begin{equation}
+    \operatorname{sinc}(x) = \begin{cases}
+        \frac{\sin{\pi x}}{\pi x} \quad \text{if} \quad x \neq 0;\\
+        1  \quad \;\; \quad \text{if} \quad x = 0.
+    \end{cases}
+\end{equation}
+
+\begin{equation}
+    \kappa(\mathbf{x},\mathbf{y}) = \prod_{i=1}^M \operatorname{sinc}\left( \frac{x_i-y_i}{\sigma} \right),
+\end{equation}
+
+\begin{equation}
+    \operatorname{supp}_{\kappa(\mathbf{x},\mathbf{y})} = \left\{ \mathbf{x},\mathbf{y}\in \mathbb{R}^M \middle| \frac{x_i- y_i}{\sigma} \neq n, n \in \mathbb{Z}^* \right\}
+\end{equation}
 
 \subsection{\textit{Kernel} produto tensorial de B-Splines}
 
+\begin{equation}
+    b_0(x) = \begin{cases}
+            0 \quad \text{if}  \quad x<-\frac{1}{2};\\
+            1 \quad \text{if}  \quad -\frac{1}{2} \leq x \leq \frac{1}{2};\\
+            0 \quad \text{if}  \quad x \geq \frac{1}{2}.
+    \end{cases}
+\end{equation}
+
+\begin{equation}
+    b_{i+1}(x) = b_i(x)*b_0(x),
+\end{equation}
+
+\begin{equation}
+    b_0(x) = \begin{cases}
+            0 \quad \quad \;\;\; \text{if}  \quad x<-1;\\
+            1+x \quad \text{if}  \quad -1 \leq x \leq 0;\\
+            1-x \quad \text{if}  \quad 0 \leq x \leq 1;\\
+            0 \quad \quad \;\;\; \text{if}  \quad x > 1.
+    \end{cases}
+\end{equation}
+
+\begin{equation*}
+    \kappa(\mathbf{x},\mathbf{y}) = b_i\left( \frac{x-y}{\sigma}\right),
+\end{equation*}
+
+\begin{equation}
+    B_1(\mathbf{x}) = \prod_{i=1}^{M}b_1(x_i),
+\end{equation}
+
+\begin{equation*}
+    \operatorname{supp}_{B_1(.)} = \underbrace{(-1,1)\times(-1,1)\times \dots\times(-1,1)}_{M \text{factors}}.
+\end{equation*}
+
+\begin{equation*}
+    \kappa(\mathbf{x},\mathbf{y}) = B_1\left( \frac{\mathbf{x} - \mathbf{y}}{\sigma} \right)
+\end{equation*}
+
+\begin{theorem}
+    (Wiener's Tauberian Theorem) Let $f(.) \in \mathcal{L}^2$ and $f(.+\lambda)$ be the class of translations of $f(.)$. If the Fourier transform of $f(.)$ has zeros that form a set of zero measure, then, given any $g(.)$, we have a function $g_1(.) = \sum_k c_kf(.+\lambda_k)$ such that 
+    \begin{equation*}
+        \int_{\infty}^{\infty}|g(x) - g_1(x)|^2dx \leq \varepsilon_T,\;\; \forall\varepsilon_T>0.
+    \end{equation*}
+\end{theorem}
+
 \section{Ortonormalização}
+
+\begin{equation}
+    \boldsymbol{\beta}_i = \sum_{j=1}^{M}h_{ij}\kappa(\mathbf{r}_j,.), \mathbf{r}_j \in \mathcal{D}.\label{eq:linearComb}
+\end{equation}
+
+\begin{equation}
+    \langle \boldsymbol{\beta}_i, \boldsymbol{\beta}_j \rangle_{\mathbf{B}} = \delta_{ij},\label{eq:KronDelta}
+\end{equation}
+
+\begin{equation}
+    \langle \sum_{\ell=1}^{M}h_{i\ell}\kappa(\mathbf{r}_\ell,.), \sum_{m=1}^{M}h_{jm}\kappa(\mathbf{r}_m,.) \rangle_{\mathbf{B}} = \delta_{ij}.
+\end{equation}
+
+\begin{equation}
+    \sum_{\ell=1}^{M}h_{i\ell}\sum_{m=1}^{M}h_{jm}\kappa(\mathbf{r}_\ell,\mathbf{r}_m) = \delta_{ij},
+\end{equation}
+
+\begin{equation}
+    \mathbf{H} \mathbf{G} \mathbf{H}^{\top} = \mathbf{I}.
+\end{equation}
+
+\begin{equation}
+    \mathbf{H} = \left(\mathbf{H}^{\top}\right)^{-1}\mathbf{G}^{-1},
+\end{equation}
+
+\begin{equation}
+    \mathbf{H}^{\top}\mathbf{H} = \mathbf{G}^{-1},\label{eq:HtHG-1}
+\end{equation}
+
+\begin{equation}
+    \mathbf{H}^{LS} = \mathbf{G}^{-\frac{1}{2}},
+\end{equation}
+
+\begin{equation}
+    \mathbf{G}^{-\frac{1}{2}} = \mathbf{V}\begin{matrix}
+        \frac{1}{\sqrt{\lambda_1}} & 0 & \dots & 0\\
+        0 & \frac{1}{\sqrt{\lambda_2}} & \dots & 0\\
+        \vdots & \vdots & \vdots & \vdots\\
+        0 & 0 & \dots & \frac{1}{\sqrt{\lambda_M}}\\
+    \end{matrix}\mathbf{V}^{\top},
+\end{equation}
+
+\begin{equation}
+    \sum_{i=1}^{M} ||\boldsymbol{\beta}_i - \kappa(\mathbf{r}_i,.)||^2.
+\end{equation}
+
+\subsection{Exemplo com \textit{Kernels} gaussianos}
+
+\input{figuras/h_gs.tex}
+\input{figuras/h_ls.tex}
+
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}[b]{0.3\linewidth}
+        %\input{g_gs_1.tex}
+        \includegraphics[width=\linewidth]{figuras/g_gs_1.eps}
+        % \caption{Gaussian with center (0,0)}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.3\linewidth}
+        %\input{g_gs_2.tex}
+        \includegraphics[width=\linewidth]{figuras/g_gs_2.eps}
+        % \caption{Gaussian with center (0,1)}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.3\linewidth}
+        %\input{g_gs_3.tex}
+        \includegraphics[width=\linewidth]{figuras/g_gs_3.eps}
+        % \caption{Gaussian with center (0,2)}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.3\linewidth}
+        %\input{g_gs_4.tex}
+        \includegraphics[width=\linewidth]{figuras/g_gs_4.eps}
+        % \caption{Gaussian with center (1,0)}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.3\linewidth}
+        %\input{g_gs_5.tex}
+        \includegraphics[width=\linewidth]{figuras/g_gs_5.eps}
+        % \caption{Gaussian with center (1,1)}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.3\linewidth}
+        %\input{g_gs_6.tex}
+        \includegraphics[width=\linewidth]{figuras/g_gs_6.eps}
+        % \caption{Gaussian with center (1,2)}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.3\linewidth}
+        %\input{g_gs_7.tex}
+        \includegraphics[width=\linewidth]{figuras/g_gs_7.eps}
+        % \caption{Gaussian with center (2,0)}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.3\linewidth}
+        %\input{g_gs_8.tex}
+        \includegraphics[width=\linewidth]{figuras/g_gs_8.eps}
+        % \caption{Gaussian with center (2,1)}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.3\linewidth}
+        %\input{g_gs_9.tex}
+        \includegraphics[width=\linewidth]{figuras/g_gs_9.eps}
+        % \caption{Gaussian with center (2,2)}
+    \end{subfigure}
+    \caption{Functions obtained with the Gram-Schmidt technique}
+    \label{fig:gs_gaussians}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}[b]{0.3\linewidth}
+        \includegraphics[width=\linewidth]{figuras/g_ls_1.eps}
+        % \caption{Gaussian with center (0,0)}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.3\linewidth}
+        \includegraphics[width=\linewidth]{figuras/g_ls_2.eps}
+        % \caption{Gaussian with center (0,1)}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.3\linewidth}
+        \includegraphics[width=\linewidth]{figuras/g_ls_3.eps}
+        % \caption{Gaussian with center (0,2)}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.3\linewidth}
+        \includegraphics[width=\linewidth]{figuras/g_ls_4.eps}
+        % \caption{Gaussian with center (1,0)}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.3\linewidth}
+        \includegraphics[width=\linewidth]{figuras/g_ls_5.eps}
+        % \caption{Gaussian with center (1,1)}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.3\linewidth}
+        \includegraphics[width=\linewidth]{figuras/g_ls_6.eps}
+        % \caption{Gaussian with center (1,2)}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.3\linewidth}
+        \includegraphics[width=\linewidth]{figuras/g_ls_7.eps}
+        % \caption{Gaussian with center (2,0)}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.3\linewidth}
+        \includegraphics[width=\linewidth]{figuras/g_ls_8.eps}
+        % \caption{Gaussian with center (2,1)}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.3\linewidth}
+        \includegraphics[width=\linewidth]{figuras/g_ls_9.eps}
+        % \caption{Gaussian with center (2,2)}
+    \end{subfigure}
+    \caption{Functions obtained with the Löwdin Symmetric technique}
+    \label{fig:ls_gaussians}
+\end{figure}
