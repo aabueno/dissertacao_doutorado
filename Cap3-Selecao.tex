@@ -4,17 +4,188 @@
 
 \subsection{Relação entre as distâncias no espaço $\mathcal{H}$ e $\mathcal{L}^{\infty}$}
 
+\begin{equation}
+    ||f||_{q} = \left(\int_{\mathcal{D}_f}|f|^qd\mu\right)^{1/q}
+\end{equation}
+
+\begin{equation}
+    ||f||_\infty = \sup_{\mathbf{x} \in \mathcal{D}_f} |f(\mathbf{x})| 
+\end{equation}
+
+\begin{equation}
+    |\langle f(.) - g(.), \kappa(\mathbf{x},.) \rangle_{\mathcal{H}}| \leq ||f(.)-g(.)||_{\mathcal{H}}||\kappa(\mathbf{x},.)||_{\mathcal{H}}.
+\end{equation}
+
+\begin{equation}
+    |f(\mathbf{x}) - g(\mathbf{x})| \leq ||f(.)-g(.)||_{\mathcal{H}}||\kappa(\mathbf{x},.)||_{\mathcal{H}}.
+\end{equation}
+
+\begin{equation}
+    |f(\mathbf{x}) - g(\mathbf{x})| \leq ||f(.)-g(.)||_{\mathcal{H}},
+\end{equation}
+
+\begin{equation}
+    ||f(.) - g(.)||_\infty \leq ||f(.)-g(.)||_{\mathcal{H}}.
+\end{equation}
+
 \subsection{Erro quadrático médio em $\mathcal{H}$}
 
+\begin{equation}
+    d^2_\mathcal{H}(f,g) = ||f(.) - \sum_{i}\alpha_i \kappa(\mathbf{r}_i,.)||^2_{\mathcal{H}}.
+\end{equation}
+
+\begin{equation}
+    d^2_\mathcal{H}(f,g) = \langle f(.) - \sum_{i}\alpha_i \kappa(\mathbf{r}_i,.), f(.) - \sum_{j}\alpha_j \kappa(\mathbf{r}_j,.) \rangle_{\mathcal{H}}.
+\end{equation}
+
+\begin{equation}
+    d^2_\mathcal{H}(f,g) = ||f(.)||^2_\mathcal{H} - 2\sum_{i}\alpha_i f(\mathbf{r}_i)   +\sum_i\sum_{j}\alpha_i\alpha_j \kappa(\mathbf{r}_i,\mathbf{r}_j).
+\end{equation}
+
+\begin{equation}
+    d^2_\mathcal{H}(f,g) = ||f(.)||^2_\mathcal{H} -2\boldsymbol{\alpha}^\top \mathbf{f} + \boldsymbol{\alpha}^\top\mathbf{G}\boldsymbol{\alpha}.\label{eq:matrix_d2H}
+\end{equation}
+
+\begin{equation}
+    -2\mathbf{f} + 2\mathbf{G}\boldsymbol{\alpha} = \mathbf{0},
+\end{equation}
+
+\begin{equation}
+    \boldsymbol{\alpha}_o = \mathbf{G}^{-1}\mathbf{f}.\label{eq:alpha_o}
+\end{equation}
+
+\begin{equation}
+    d^2_\mathcal{H}(f,g) = ||f(.)||^2_\mathcal{H} -\mathbf{f}^\top\mathbf{G}^{-1}\mathbf{f}.
+\end{equation}
+
+\begin{equation}
+    ||f(.)||_\mathcal{H}^2 = (2\pi)^{M/2}\int_{\mathbb{R}^{M}}\frac{|\hat{f}(\boldsymbol{\xi})|^2}{\hat{\Phi}(\boldsymbol{\xi})}d\boldsymbol{\xi},
+\end{equation} 
+
 \subsection{Erro quadrático médio em $\mathcal{H}_\kappa$}
+
+\begin{equation}
+    \mathcal{H}_{\kappa} = \operatorname{span}(\kappa(\mathbf{r},.), \mathbf{r} \in \mathbb{R}^M),
+\end{equation}
+
+\begin{equation}
+||f(.) - f_{\mathcal{H}_{\kappa}}(.)||_\mathcal{H} < \varepsilon_\mathcal{H}.    
+\end{equation}
+
+\begin{equation}
+    ||f(.) - g(.)||_\mathcal{H} \leq ||f(.) - f_{\mathcal{H}_\kappa}(.)|| + ||f_{\mathcal{H}_\kappa}(.) - g(.)||,
+\end{equation}
+
+\begin{equation}
+    ||f(.) - g(.)||_\mathcal{H} \leq ||f_{\mathcal{H}_\kappa}(.) - g(.)||.
+\end{equation}
+
+\begin{equation}
+    d_{\mathcal{H}_{\kappa}}^2(f_{\mathcal{H}_\kappa},g) = ||\sum_{\boldsymbol{\zeta}_i \in \mathcal{F}} \omega_i\kappa(\boldsymbol{\zeta}_i,.) - \sum_{\mathbf{r}_i \in \mathcal{D}} \alpha_i\kappa(\mathbf{r}_i,.)||_{\mathcal{H}_{\kappa}}^2.
+\end{equation}
+
+\begin{equation}
+    d_{\mathcal{H}_{\kappa}}^2(f_{\mathcal{H}_\kappa},g)  = \boldsymbol{\omega}^{T}\mathbf{G}_{\mathcal{F}}\boldsymbol{\omega} - 2\boldsymbol{\omega}^{T}\mathbf{G}_{\mathcal{FD}}\boldsymbol{\alpha} + \boldsymbol{\alpha}^{T}\mathbf{G}_{\mathcal{D}}\boldsymbol{\alpha}, \label{eq:d2_Hk_vectorial}
+\end{equation}
+
+\begin{equation}
+    -2\mathbf{G}_{\mathcal{FD}}^{T}\boldsymbol{\omega} + 2\mathbf{G}_{\mathcal{D}}\boldsymbol{\alpha} = \mathbf{0},
+\end{equation}
+
+\begin{equation}
+    \boldsymbol{\alpha} = \mathbf{G}_{\mathcal{D}}^{-1}\mathbf{G}_{\mathcal{FD}}^{T}\boldsymbol{\omega}.\label{eq:alpha_Hk}
+\end{equation}
+
+\begin{equation}
+    d_{\mathcal{H}_{\kappa}}^2(f_{\mathcal{H}_\kappa},g)  = \boldsymbol{\omega}^{T}\mathbf{G}_{\mathcal{F}}\boldsymbol{\omega} - \boldsymbol{\omega}^{T}\mathbf{G}_{\mathcal{FD}}\mathbf{G}_{\mathcal{D}}^{-1}\mathbf{G}_{\mathcal{FD}}^{T}\boldsymbol{\omega}.\label{eq:d2_Hk}
+\end{equation}
+
+\begin{equation}
+    d_{\mathcal{H}_{\kappa}}^2(f_{\mathcal{H}_\kappa},g)  = \boldsymbol{\omega}^{T}\mathbf{G}_{\mathcal{F}}\boldsymbol{\omega} - \boldsymbol{\omega}^{T}\tilde{\mathbf{G}}_{\mathcal{F}}\boldsymbol{\omega} = \boldsymbol{\omega}^{T}(\mathbf{G}_{\mathcal{F}} - \tilde{\mathbf{G}}_{\mathcal{F}})\boldsymbol{\omega}.
+\end{equation}
+
+\begin{equation}
+    d_{\mathcal{H}_{\kappa}}^2(f_{\mathcal{H}_\kappa},g)  \leq ||\mathbf{G}_{\mathcal{F}} - \tilde{\mathbf{G}}_{\mathcal{F}}||_2 ||\boldsymbol{\omega}||^2_2.
+\end{equation}
+
+\begin{multline}
+    \left( \mathbf{G}_{\mathcal{F}}\right)_{ij} = \langle \kappa(\boldsymbol{\zeta}_i,.),\kappa(\boldsymbol{\zeta}_j,.) \rangle_{\mathcal{H}}\\
+    = \langle \mathbf{p}_{\mathcal{B}}(\boldsymbol{\zeta}_i) + \mathbf{p}_{\mathcal{B}^{\perp}}(\boldsymbol{\zeta}_i), \mathbf{p}_{\mathcal{B}}(\boldsymbol{\zeta}_j) + \mathbf{p}_{\mathcal{B}^{\perp}}(\boldsymbol{\zeta}_j) \rangle_{\mathcal{H}}\\
+    = \langle \mathbf{p}_{\mathcal{B}}(\boldsymbol{\zeta}_i),\mathbf{p}_{\mathcal{B}}(\boldsymbol{\zeta}_j)\rangle_{\mathcal{H}} + \langle \mathbf{p}_{\mathcal{B}^\perp}(\boldsymbol{\zeta}_i),\mathbf{p}_{\mathcal{B}^\perp}(\boldsymbol{\zeta}_j)\rangle_{\mathcal{H}},
+\end{multline}
+
+\begin{equation}
+    \left( \tilde{\mathbf{G}}_{\mathcal{F}}\right)_{ij} = \langle \mathbf{p}_{\mathcal{B}}(\boldsymbol{\zeta}_i),\mathbf{p}_{\mathcal{B}}(\boldsymbol{\zeta}_j)\rangle_{\mathcal{H}},
+\end{equation}
+
+\begin{equation}
+    \left( \mathbf{G}_{\mathcal{F}} - \tilde{\mathbf{G}}_{\mathcal{F}}\right)_{ij} = \langle \mathbf{p}_{\mathcal{B}^\perp}(\boldsymbol{\zeta}_i),\mathbf{p}_{\mathcal{B}^\perp}(\boldsymbol{\zeta}_j)\rangle_{\mathcal{H}} \leq \varepsilon^2.
+\end{equation}
+
+\begin{equation}
+    r_i = \sum_{j \neq i} |a_{ij}|
+\end{equation}
+
+\begin{equation}
+    d_{\mathcal{H}_{\kappa}}^2(f_{\mathcal{H}_\kappa},g)  \leq \varepsilon^2|\mathcal{F}| ||\boldsymbol{\omega}||^2_2,
+\end{equation}
 
 \section{Escolha de $\sigma$}
 
 \subsection{Teoria da amostragem e projeções}
 
+\begin{figure}[H]
+    \centering
+    \begin{circuitikz}
+        \mixer{(0,0)}{mixer}
+        \node[draw, thick, shape=rectangle, minimum size=12pt, at={([xshift=-40pt]mixer.center)}, align=center](filter){$\varphi(t)$};
+        \node[draw, thick, shape=rectangle, minimum size=12pt, at={([yshift=-40pt]mixer.center)}, align=center](comb){$\sum_n\delta(t-nT)$};
+        \node[at={([xshift=40pt]mixer.center)}](right){};
+        \node[at={([xshift=-40pt]filter.center)}](left){};
+        \draw (left.east) edge[->] (filter.west);
+        \draw (filter.east) edge[->] (mixer.west);
+        \draw (comb.north) edge[->] (mixer.south);
+        \draw (mixer.east) edge[->](right.west);
+    \end{circuitikz}
+    \caption{Sampling circuit}
+    \label{fig:sampling}
+\end{figure}
+
 \subsection{Estimação espectral multivariada por periodograma de Lomb-Scargle}
 
+\begin{equation}
+    y(\mathbf{x}_n) = \sum_{k=0}^{N_{fr}-1} a_k \cos(2\pi \mathbf{f}^T_k\mathbf{x}_n - \tau_k^{\star}) + b_k \sin(2\pi \mathbf{f}^T_k\mathbf{x}_n - \tau_k^{\star}),
+\end{equation}
+
+\begin{equation}
+    \tau_k^{\star} = \frac{\sum_{n=0}^{N_x-1} \sin(2\pi \mathbf{f}_k^T\mathbf{x}(n))}{\sum_{n=0}^{N_x-1} \cos(2\pi \mathbf{f}_k^T\mathbf{x}(n))}.
+\end{equation}
+
+\begin{equation}
+    a_k = \frac{\sum_{n=0}^{N_x-1} y(\mathbf{x}_n)\cos(2\pi \mathbf{f}_k^T\mathbf{x}_n - \tau_k^{\star})}{\sum_{n=0}^{N_x-1} \cos^2(2\pi \mathbf{f}_k^T\mathbf{x}_n - \tau_k^{\star})},
+\end{equation}
+
+\begin{equation}
+    b_k = \frac{\sum_{n=0}^{N_x-1} y(\mathbf{x}_n)\sin(2\pi \mathbf{f}_k^T\mathbf{x}_n - \tau_k^{\star})}{\sum_{n=0}^{N_x-1} \sin^2(2\pi \mathbf{f}_k^T\mathbf{x}_n - \tau_k^{\star})}.
+\end{equation}
+
 \section{Escolha de $\rho$}
+
+\begin{equation}
+    ||\kappa(\mathbf{x},.)||^2 - ||p_{\mathcal{B}}(\mathbf{x})||^2 = ||p_{\mathcal{B}^\perp}(\mathbf{x})||^2 \leq \varepsilon^2,
+\end{equation}
+
+\begin{equation}
+    p_{\mathcal{B}}(\mathbf{x}) = \mathbf{H}\boldsymbol{\kappa}(\mathbf{x}).
+\end{equation}
+
+\begin{equation}
+    1 - \boldsymbol{\kappa}^{\top}(\mathbf{x})\mathbf{G}^{-1}\boldsymbol{\kappa}(\mathbf{x}) \leq \varepsilon^2.
+\end{equation}
+
+\begin{equation}
+    \boldsymbol{\kappa}^{\top}(\mathbf{x})\mathbf{G}^{-1}\boldsymbol{\kappa}(\mathbf{x}) \geq 1 - \varepsilon^2.
+\end{equation}
 
 \section{Escolha de $\mu$}
 
