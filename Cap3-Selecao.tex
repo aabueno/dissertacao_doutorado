@@ -189,12 +189,140 @@
 
 \section{Escolha de $\mu$}
 
+\begin{align}
+    (\boldsymbol{\kappa}(\mathbf{x}(n)))_i &= \kappa(\mathbf{x}(n),\mathbf{r}_i)\\
+    \tilde{\mathbf{p}}_{\mathcal{B}}(n) &= \mathbf{H}\boldsymbol{\kappa}(\mathbf{x}(n))\\
+    y(n) &= \mathbf{w}^\top(n-1) \tilde{\mathbf{p}}_{\mathcal{B}}(n)\\
+    e(n) &= d(n) - y(n)\\
+    \mathbf{w}(n) &= \mathbf{w}(n-1) + \mu e(n) \tilde{\mathbf{p}}_{\mathcal{B}}(n).\label{eq:w_adapt}
+\end{align}
+
+\begin{equation}
+    MSD \triangleq \lim_{n\rightarrow \infty} E || \tilde{\mathbf{w}}(n) ||^2
+\end{equation}
+
+\begin{equation}
+    EMSE \triangleq \lim_{n\rightarrow \infty} E | e_a(n) |^2, 
+\end{equation}
+
+\begin{equation}
+    EMSE = \lim_{n\rightarrow \infty} E \left[\tilde{\mathbf{w}}^\top(n-1)\tilde{\mathbf{p}}_{\mathcal{B}}(n)\tilde{\mathbf{p}}^\top_{\mathcal{B}}(n)\tilde{\mathbf{w}}(n-1)\right],\label{eq:emse_wppw} 
+\end{equation}
+
 \subsection{Premissas}
+
+\begin{equation}
+    EMSE = \lim_{n\rightarrow \infty} E \left[\tilde{\mathbf{w}}^\top(n-1)\mathbf{R}_{pp}\tilde{\mathbf{w}}(n-1)\right],\label{eq:emse_wRw} 
+\end{equation}
+
+\begin{equation}
+    MSD = \lim_{n\rightarrow \infty} E \left[\tilde{\mathbf{w}}^\top(n-1)\mathbf{I}\tilde{\mathbf{w}}(n-1)\right], 
+\end{equation}
+
+\begin{equation}
+    \tilde{\mathbf{w}}(n) = \tilde{\mathbf{w}}(n-1) - \mu e(n) \tilde{\mathbf{p}}_{\mathcal{B}}(n).\label{eq:w_tilde_adapt}
+\end{equation}
+
+\begin{multline}
+    \tilde{\mathbf{w}}^\top(n)\boldsymbol{\Xi}\tilde{\mathbf{w}}(n) = \tilde{\mathbf{w}}^\top(n-1)\boldsymbol{\Xi}\tilde{\mathbf{w}}(n-1) \\- 2\tilde{\mathbf{w}}^\top(n-1)\boldsymbol{\Xi}\mu e(n)\tilde{\mathbf{p}}_{\mathcal{B}}(n) 
+     \\+ \mu e(n)\tilde{\mathbf{p}}^\top_{\mathcal{B}}(n)\boldsymbol{\Xi}\mu e(n)\tilde{\mathbf{p}}_{\mathcal{B}}(n) .
+\end{multline}
+
+\begin{multline}
+    \tilde{\mathbf{w}}^\top(n)\boldsymbol{\Xi}\tilde{\mathbf{w}}(n) = \tilde{\mathbf{w}}^\top(n-1)\boldsymbol{\Xi}\tilde{\mathbf{w}}(n-1)\\-
+    2\mu\tilde{\mathbf{w}}^\top(n-1)\boldsymbol{\Xi}\tilde{\mathbf{p}}_{\mathcal{B}}(n)\tilde{\mathbf{p}}_{\mathcal{B}}^\top(n)\tilde{\mathbf{w}}(n-1) \\-
+    2\mu\tilde{\mathbf{w}}^\top(n-1)\boldsymbol{\Xi}\tilde{\mathbf{p}}_{\mathcal{B}}(n)v(n) \\+
+    \mu^2 \tilde{\mathbf{w}}^{\top}(n-1)\tilde{\mathbf{p}}_{\mathcal{B}}(n)\tilde{\mathbf{p}}^\top_{\mathcal{B}}(n)\boldsymbol{\Xi}\tilde{\mathbf{p}}_{\mathcal{B}}(n)\tilde{\mathbf{p}}_{\mathcal{B}}^\top(n)\tilde{\mathbf{w}}(n-1)\\+
+    2\mu^2 \tilde{\mathbf{w}}^{\top}(n-1)\tilde{\mathbf{p}}_{\mathcal{B}}(n)\tilde{\mathbf{p}}^\top_{\mathcal{B}}(n)\boldsymbol{\Xi}\tilde{\mathbf{p}}_{\mathcal{B}}(n)v(n)\\+
+    \mu^2 v^2(n)\tilde{\mathbf{p}}^\top_{\mathcal{B}}(n)\boldsymbol{\Xi}\tilde{\mathbf{p}}_{\mathcal{B}}(n).\label{eq:wSw}
+\end{multline}
 
 \subsection{Estabilidade na média}
 
+\begin{equation}
+    E\left[\tilde{\mathbf{w}}(n)\right] = E\left[ \left(\mathbf{I} - \mu \tilde{\mathbf{p}}_{\mathcal{B}}\tilde{\mathbf{p}}^\top_{\mathcal{B}} \right) \right] E\left[\tilde{\mathbf{w}}(n-1)\right].
+\end{equation}
+
+\begin{equation}
+    \mu = \frac{2}{\lambda_{max}},
+\end{equation}
+
 \subsection{Comportamento médio quadrático}
+
+\begin{multline}
+    E\left[ \tilde{\mathbf{w}}^\top(n)\boldsymbol{\Xi}\tilde{\mathbf{w}}(n)\right] = E\left[ \tilde{\mathbf{w}}^\top(n-1)\boldsymbol{\Xi}\tilde{\mathbf{w}}(n-1) \right]\\
+    - 2\mu E\left[ \tilde{\mathbf{w}}^\top(n-1)\boldsymbol{\Xi}\tilde{\mathbf{p}}_{\mathcal{B}}(n)\tilde{\mathbf{p}}_{\mathcal{B}}^\top(n)\tilde{\mathbf{w}}(n-1) \right]\\
+    +\mu^2 E\left[\tilde{\mathbf{w}}^{\top}(n-1)\tilde{\mathbf{p}}_{\mathcal{B}}(n)\tilde{\mathbf{p}}^\top_{\mathcal{B}}(n)\boldsymbol{\Xi}\tilde{\mathbf{p}}_{\mathcal{B}}(n)\tilde{\mathbf{p}}_{\mathcal{B}}^\top(n)\tilde{\mathbf{w}}(n-1)\right]\\
+    +\mu^2 \sigma_{v}^2E\left[ \tilde{\mathbf{p}}^\top_{\mathcal{B}}(n)\boldsymbol{\Xi}\tilde{\mathbf{p}}_{\mathcal{B}}(n) \right].\label{eq:EwSw}
+\end{multline}
+
+\begin{equation*}
+    \operatorname{vec}\left(\mathbf{U}\boldsymbol{\Xi}\mathbf{V}\right) = \mathbf{V}^\top\otimes\mathbf{U}\operatorname{vec}\left(\boldsymbol{\Xi}\right),
+\end{equation*}
+
+\begin{equation}
+    E\left[ \tilde{\mathbf{w}}^\top_{\otimes^2}(n) \boldsymbol{\xi}\right] = E\left[ \tilde{\mathbf{w}}^\top_{\otimes^2}(n-1) \mathbf{F}\boldsymbol{\xi}\right] +\mu^2 \sigma_{v}^2E\left[ \tilde{\mathbf{p}}^\top_{\mathcal{B}\otimes^2}(n)\boldsymbol{\xi} \right],\label{eq:Ewkron2}
+\end{equation}
+
+\begin{equation*}
+    \mathbf{F} = \mathbf{I} -\mu\mathbf{A} + \mu^2\mathbf{B},
+\end{equation*}
+
+\begin{equation*}
+    \mathbf{A} = \mathbf{R}_{pp}\otimes\mathbf{I} + \mathbf{I}\otimes\mathbf{R}_{pp},
+\end{equation*}
+
+\begin{equation*}
+    \mathbf{B} = E\left[ \tilde{\mathbf{p}}_\mathcal{B}(n)\tilde{\mathbf{p}}^\top_\mathcal{B}(n) \otimes \tilde{\mathbf{p}}_\mathcal{B}(n)\tilde{\mathbf{p}}^\top_\mathcal{B}(n)\right].
+\end{equation*}
+
+\begin{equation}
+    E\left[ \tilde{\mathbf{w}}^\top_{\otimes^2}(n)\right] \boldsymbol{\xi} = E\left[ \tilde{\mathbf{w}}^\top_{\otimes^2}(n-1) \right]\mathbf{F}\boldsymbol{\xi} +\mu^2 \sigma_{v}^2E\left[ \tilde{\mathbf{p}}^\top_{\mathcal{B}\otimes^2}(n) \right]\boldsymbol{\xi}.
+\end{equation}
+
+\begin{equation}
+    E\left[ \tilde{\mathbf{w}}_{\otimes^2}(n)\right]  = \mathbf{F}E\left[ \tilde{\mathbf{w}}_{\otimes^2}(n-1) \right] +\mu^2 \sigma_{v}^2E\left[ \tilde{\mathbf{p}}_{\mathcal{B}\otimes^2}(n) \right],\label{eq:Ewkron2_last}
+\end{equation}
 
 \subsection{Estabilidade média quadrática}
 
+\begin{equation}
+    0<\mu<\min \left\{\frac{1}{\lambda_{max}(\mathbf{A}^{-1}\mathbf{B})},\frac{1}{\max\left\{\lambda(\mathbf{L})\in\mathbb{R}^{+}\right\}} \right\}
+\end{equation}
+
+\begin{equation}
+    \mathbf{L} = \begin{bmatrix}
+        \mathbf{A}/2 & -\mathbf{B}/2\\
+        \mathbf{I} & \mathbf{0}
+    \end{bmatrix}.
+\end{equation}
+
+\begin{equation}
+    \mu<\min \left\{\frac{2}{\lambda_{max}(\mathbf{R}_{pp})},\frac{1}{\lambda_{max}(\mathbf{A}^{-1}\mathbf{B})},\frac{1}{\max\left\{\lambda(\mathbf{L})\in\mathbb{R}^{+}\right\}} \right\}.
+\end{equation}
+
 \subsection{Performance em estado estacionário}
+
+\begin{equation}
+    \lim_{n\rightarrow\infty} E\left[ \tilde{\mathbf{w}}_{\otimes^2}(n)\right] = \lim_{n\rightarrow\infty} E\left[ \tilde{\mathbf{w}}_{\otimes^2}(n-1)\right] = E\left[ \tilde{\mathbf{w}}_{\otimes^2}(\infty)\right].
+\end{equation}
+
+\begin{equation}
+    E\left[ \tilde{\mathbf{w}}_{\otimes^2}(\infty)\right]  = \mathbf{F}E\left[ \tilde{\mathbf{w}}_{\otimes^2}(\infty) \right] +\mu^2 \sigma_{v}^2E\left[ \tilde{\mathbf{p}}_{\mathcal{B}\otimes^2}(\infty) \right],
+\end{equation}
+
+\begin{equation}
+    (\mathbf{I} - \mathbf{F})E\left[ \tilde{\mathbf{w}}_{\otimes^2}(\infty)\right]  =\mu^2 \sigma_{v}^2E\left[ \tilde{\mathbf{p}}_{\mathcal{B}\otimes^2}(\infty) \right],
+\end{equation}
+
+\begin{equation}
+    E\left[ \tilde{\mathbf{w}}_{\otimes^2}(\infty)\right]  =\mu^2 \sigma_{v}^2(\mathbf{I} - \mathbf{F})^{-1}E\left[ \tilde{\mathbf{p}}_{\mathcal{B}\otimes^2}(\infty) \right].
+\end{equation}
+
+\begin{equation}
+    MSD = E\left[ \tilde{\mathbf{w}}^\top_{\otimes^2}(\infty)\right]\operatorname{vec}(\mathbf{I})
+\end{equation}
+
+\begin{equation}
+    EMSE = E\left[ \tilde{\mathbf{w}}^\top_{\otimes^2}(\infty)\right]\operatorname{vec}(\mathbf{R}_{pp}).
+\end{equation}
