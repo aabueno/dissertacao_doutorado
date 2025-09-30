@@ -1,138 +1,162 @@
-\chapter{Seleção de Parâmetros} \label{cap:selecao}
+\chapter{Parameter Selection}\label{sec:choice}
 
-\section{Escolha de $\varepsilon$}
+As we have seen in the previous section, to create a Cartesian grid we need a parameter $\rho$. Also, every kernel function has a parameter $\sigma$ which defines it. As seen in Section \ref{sec:gsklms}, we can guarantee the minimal norm of the projections of kernels mapped by input vectors by choosing a parameter $\varepsilon$. In this section, we show how these parameters affect the function approximation that the kernel adaptive filter is doing. As any other adaptive filter, we need an adaptation step $\mu$ which will determine its stability and convergence speed. The excess mean squared error and the mean square deviation are estimated by means of a stochastic analysis.
 
-\subsection{Relação entre as distâncias no espaço $\mathcal{H}$ e $\mathcal{L}^{\infty}$}
+\section{Choice of $\varepsilon$}
 
+As shown in Section \ref{sec:gsklms}, the parameter $\varepsilon$ represents the maximum distance in the RKHS $\mathcal{H}$ between a kernel $\kappa(\mathbf{x}_i,.)$ mapped by an input vector and its projection in the subspace $\mathbf{B}$, $p_{\mathbf{B}}(x)$. But we need a better understanding of what this distance means in a more traditional space of functions.
+
+\subsection{Relationship between the kernel and the $\mathcal{L}^\infty$ distances}
+
+The Lebesgue spaces $\mathcal{L}^q$ are a family of normed spaces of functions where the norm of a function $f(.)$, whose domain is $\mathcal{D}_f$, is calculated as
 \begin{equation}
     ||f||_{q} = \left(\int_{\mathcal{D}_f}|f|^qd\mu\right)^{1/q}
 \end{equation}
-
+When $p$ is infinity, the norm is known as the supremum norm
 \begin{equation}
     ||f||_\infty = \sup_{\mathbf{x} \in \mathcal{D}_f} |f(\mathbf{x})| 
 \end{equation}
+where $\sup$ is the least upper bound. This means that $\mathcal{L}^{\infty}$ is the space of bounded functions.
 
+Given two functions $f,g \in \mathcal{H}$, the Cauchy-Schwarz inequality gives us
 \begin{equation}
     |\langle f(.) - g(.), \kappa(\mathbf{x},.) \rangle_{\mathcal{H}}| \leq ||f(.)-g(.)||_{\mathcal{H}}||\kappa(\mathbf{x},.)||_{\mathcal{H}}.
 \end{equation}
-
+Evaluating the left side of the inequality using the reproducing property of the kernel, we have
 \begin{equation}
     |f(\mathbf{x}) - g(\mathbf{x})| \leq ||f(.)-g(.)||_{\mathcal{H}}||\kappa(\mathbf{x},.)||_{\mathcal{H}}.
 \end{equation}
-
+Since the kernels with which we are working are normal, we have
 \begin{equation}
     |f(\mathbf{x}) - g(\mathbf{x})| \leq ||f(.)-g(.)||_{\mathcal{H}},
 \end{equation}
-
+and since we used an arbitrary $\mathbf{x}$ it follows that
 \begin{equation}
     ||f(.) - g(.)||_\infty \leq ||f(.)-g(.)||_{\mathcal{H}}.
 \end{equation}
+This shows that the least upper bound, or the maximum in a compact set, of the difference between two functions is bounded by their distance in the RKHS.
 
-\subsection{Erro quadrático médio em $\mathcal{H}$}
+\subsection{Mean Squared Error in $\mathcal{H}$}
 
+Let $f(.) \in \mathcal{H}$ and $g(.) = \sum_{i}\alpha_i \kappa(\mathbf{r}_i,.) \in \mathcal{B} \subset \mathcal{H}$. We want to calculate the $\alpha_i$ that minimize
 \begin{equation}
     d^2_\mathcal{H}(f,g) = ||f(.) - \sum_{i}\alpha_i \kappa(\mathbf{r}_i,.)||^2_{\mathcal{H}}.
 \end{equation}
-
+The square distance can be calculated using the inner product
 \begin{equation}
     d^2_\mathcal{H}(f,g) = \langle f(.) - \sum_{i}\alpha_i \kappa(\mathbf{r}_i,.), f(.) - \sum_{j}\alpha_j \kappa(\mathbf{r}_j,.) \rangle_{\mathcal{H}}.
 \end{equation}
-
+Evaluating the distributives and using the reproducing property of the kernel, we have
 \begin{equation}
     d^2_\mathcal{H}(f,g) = ||f(.)||^2_\mathcal{H} - 2\sum_{i}\alpha_i f(\mathbf{r}_i)   +\sum_i\sum_{j}\alpha_i\alpha_j \kappa(\mathbf{r}_i,\mathbf{r}_j).
 \end{equation}
-
+Defining $\mathbf{f} = \left[ f(\mathbf{r}_1) \;\; f(\mathbf{r}_2) \;\; \dots \;\; f(\mathbf{r}_N) \right]^\top$ and $\boldsymbol{\alpha} = \left[\alpha_1 \;\;\alpha_2 \;\;\dots \;\;\alpha_N\right]^\top$, we write the above equation in matrix notation as
 \begin{equation}
     d^2_\mathcal{H}(f,g) = ||f(.)||^2_\mathcal{H} -2\boldsymbol{\alpha}^\top \mathbf{f} + \boldsymbol{\alpha}^\top\mathbf{G}\boldsymbol{\alpha}.\label{eq:matrix_d2H}
 \end{equation}
-
+Calculating the gradient in relation to $\boldsymbol{\alpha}$ and equating to zero, we have
 \begin{equation}
     -2\mathbf{f} + 2\mathbf{G}\boldsymbol{\alpha} = \mathbf{0},
 \end{equation}
-
+so that the optimum $\boldsymbol{\alpha}$ is
 \begin{equation}
     \boldsymbol{\alpha}_o = \mathbf{G}^{-1}\mathbf{f}.\label{eq:alpha_o}
 \end{equation}
-
+Substituting \eqref{eq:alpha_o} into \eqref{eq:matrix_d2H}, we have
 \begin{equation}
     d^2_\mathcal{H}(f,g) = ||f(.)||^2_\mathcal{H} -\mathbf{f}^\top\mathbf{G}^{-1}\mathbf{f}.
 \end{equation}
-
+When $\kappa(\mathbf{x},\mathbf{y}) = \Phi(\mathbf{x} - \mathbf{y})$, it is possible to calculate the squared norm of $f$ as \cite{wendland_scattered_2005}
 \begin{equation}
     ||f(.)||_\mathcal{H}^2 = (2\pi)^{M/2}\int_{\mathbb{R}^{M}}\frac{|\hat{f}(\boldsymbol{\xi})|^2}{\hat{\Phi}(\boldsymbol{\xi})}d\boldsymbol{\xi},
 \end{equation} 
+where $\hat{f}(\boldsymbol{\xi})$ and $\hat{\Phi}(\boldsymbol{\xi})$ are the Fourier transforms of $f(\mathbf{x})$ and $\Phi(\mathbf{x})$ respectively.
 
-\subsection{Erro quadrático médio em $\mathcal{H}_\kappa$}
+\subsection{Mean Squared Error in $\mathcal{H}_{\kappa}$}
 
+Defining 
 \begin{equation}
     \mathcal{H}_{\kappa} = \operatorname{span}(\kappa(\mathbf{r},.), \mathbf{r} \in \mathbb{R}^M),
 \end{equation}
-
+we see that $\mathcal{H}_{\kappa} \subset \mathcal{H}$ and it is possible to show that $\mathcal{H}_{\kappa}$ is dense in $\mathcal{H}$ \cite{aronszajn_theory_1950}. So, for every $f \in \mathcal{H}$ and $\varepsilon_\mathcal{H} \in \mathbb{R}$ there is a $f_{\mathcal{H}_{\kappa}}(.) \in \mathcal{H}_{\kappa} $ where
 \begin{equation}
 ||f(.) - f_{\mathcal{H}_{\kappa}}(.)||_\mathcal{H} < \varepsilon_\mathcal{H}.    
 \end{equation}
 
+We want to bound $||f(.) - g(.)||$, where $ g(.) \in \mathcal{H}$. From the triangular inequality
 \begin{equation}
     ||f(.) - g(.)||_\mathcal{H} \leq ||f(.) - f_{\mathcal{H}_\kappa}(.)|| + ||f_{\mathcal{H}_\kappa}(.) - g(.)||,
 \end{equation}
-
+and, since $\varepsilon_\mathcal{H}$ is arbitrarily small, we have
 \begin{equation}
     ||f(.) - g(.)||_\mathcal{H} \leq ||f_{\mathcal{H}_\kappa}(.) - g(.)||.
 \end{equation}
 
+The functions used to approximate other functions in an adaptive filter are of the form $g(.) =\sum_{\mathbf{r}_i \in \mathcal{D}} \alpha_i\kappa(\mathbf{r}_i,.) \in \mathcal{H}_{\kappa}$ and $f_{\mathcal{H}_\kappa}(.) =\sum_{\boldsymbol{\zeta}_i \in \mathcal{F}} \omega_i\kappa(\boldsymbol{\zeta}_i,.) \in \mathcal{H}_{\kappa}$ is a function that approximates $f(.)$ in the space $\mathcal{H}_{\kappa}$ so that 
 \begin{equation}
     d_{\mathcal{H}_{\kappa}}^2(f_{\mathcal{H}_\kappa},g) = ||\sum_{\boldsymbol{\zeta}_i \in \mathcal{F}} \omega_i\kappa(\boldsymbol{\zeta}_i,.) - \sum_{\mathbf{r}_i \in \mathcal{D}} \alpha_i\kappa(\mathbf{r}_i,.)||_{\mathcal{H}_{\kappa}}^2.
 \end{equation}
-
+Using the linear properties of the inner product and the reproducing property of the kernel, we have
 \begin{equation}
     d_{\mathcal{H}_{\kappa}}^2(f_{\mathcal{H}_\kappa},g)  = \boldsymbol{\omega}^{T}\mathbf{G}_{\mathcal{F}}\boldsymbol{\omega} - 2\boldsymbol{\omega}^{T}\mathbf{G}_{\mathcal{FD}}\boldsymbol{\alpha} + \boldsymbol{\alpha}^{T}\mathbf{G}_{\mathcal{D}}\boldsymbol{\alpha}, \label{eq:d2_Hk_vectorial}
 \end{equation}
-
+where $\boldsymbol{\omega} = [\omega_1\;\;\omega_2\;\;\dots\;\;\omega_{|\mathcal{F}|}]^\top$, $\boldsymbol{\alpha} = [\alpha_1\;\;\alpha_2\;\;\dots\;\;\alpha_N]^\top$, $\mathbf{G}_{\mathcal{F}}$ and $\mathbf{G}_{\mathcal{D}}$ are the Gram matrices of the kernels mapped by $\boldsymbol{\zeta}_i$ and $\mathbf{r}_i$, respectively, and $\mathbf{G}_{\mathcal{FD}}$ has elements as $\kappa(\boldsymbol{\zeta}_i,\mathbf{r}_j)$.
+Calculating the gradient in relation to $\boldsymbol{\alpha}$ and equating to zero, we get
 \begin{equation}
     -2\mathbf{G}_{\mathcal{FD}}^{T}\boldsymbol{\omega} + 2\mathbf{G}_{\mathcal{D}}\boldsymbol{\alpha} = \mathbf{0},
 \end{equation}
-
+so that the optimal $\boldsymbol{\alpha}$ is
 \begin{equation}
     \boldsymbol{\alpha} = \mathbf{G}_{\mathcal{D}}^{-1}\mathbf{G}_{\mathcal{FD}}^{T}\boldsymbol{\omega}.\label{eq:alpha_Hk}
 \end{equation}
-
+and the minimum distance is
 \begin{equation}
     d_{\mathcal{H}_{\kappa}}^2(f_{\mathcal{H}_\kappa},g)  = \boldsymbol{\omega}^{T}\mathbf{G}_{\mathcal{F}}\boldsymbol{\omega} - \boldsymbol{\omega}^{T}\mathbf{G}_{\mathcal{FD}}\mathbf{G}_{\mathcal{D}}^{-1}\mathbf{G}_{\mathcal{FD}}^{T}\boldsymbol{\omega}.\label{eq:d2_Hk}
 \end{equation}
 
+Since $\mathbf{G}^{-1} = \mathbf{H}^\top\mathbf{H}$ and the columns of $\mathbf{G}_{\mathcal{FD}}$ can be seen to be $\boldsymbol{\kappa}_{\mathcal{D}}(\boldsymbol{\zeta}_i)$, where $\boldsymbol{\kappa}_{\mathcal{D}}(.) = [\kappa(\mathbf{r}_1,.) \;\; \kappa(\mathbf{r}_2,.) \;\; \dots \;\; \kappa(\mathbf{r}_{|\mathcal{D}|},.)]$,
+the product $\mathbf{H}\mathbf{G}_{\mathcal{F\mathcal{D}}} = \tilde{\mathbf{P}}$ has columns that represent the projections of $\kappa(\boldsymbol{\zeta}_i,.)$ in $\mathcal{B}$, and $\tilde{\mathbf{G}}_\mathcal{F} = \tilde{\mathbf{P}}^\top\tilde{\mathbf{P}}$ is the Gramian of these projections. So we have
 \begin{equation}
     d_{\mathcal{H}_{\kappa}}^2(f_{\mathcal{H}_\kappa},g)  = \boldsymbol{\omega}^{T}\mathbf{G}_{\mathcal{F}}\boldsymbol{\omega} - \boldsymbol{\omega}^{T}\tilde{\mathbf{G}}_{\mathcal{F}}\boldsymbol{\omega} = \boldsymbol{\omega}^{T}(\mathbf{G}_{\mathcal{F}} - \tilde{\mathbf{G}}_{\mathcal{F}})\boldsymbol{\omega}.
 \end{equation}
-
+The use of matrix norms \cite{horn_matrix_2017} gives us
 \begin{equation}
     d_{\mathcal{H}_{\kappa}}^2(f_{\mathcal{H}_\kappa},g)  \leq ||\mathbf{G}_{\mathcal{F}} - \tilde{\mathbf{G}}_{\mathcal{F}}||_2 ||\boldsymbol{\omega}||^2_2.
 \end{equation}
-
+The elements of $\mathbf{G}_{\mathcal{F}}$ are inner products in $\mathcal{H}$, that is,
 \begin{multline}
     \left( \mathbf{G}_{\mathcal{F}}\right)_{ij} = \langle \kappa(\boldsymbol{\zeta}_i,.),\kappa(\boldsymbol{\zeta}_j,.) \rangle_{\mathcal{H}}\\
     = \langle \mathbf{p}_{\mathcal{B}}(\boldsymbol{\zeta}_i) + \mathbf{p}_{\mathcal{B}^{\perp}}(\boldsymbol{\zeta}_i), \mathbf{p}_{\mathcal{B}}(\boldsymbol{\zeta}_j) + \mathbf{p}_{\mathcal{B}^{\perp}}(\boldsymbol{\zeta}_j) \rangle_{\mathcal{H}}\\
     = \langle \mathbf{p}_{\mathcal{B}}(\boldsymbol{\zeta}_i),\mathbf{p}_{\mathcal{B}}(\boldsymbol{\zeta}_j)\rangle_{\mathcal{H}} + \langle \mathbf{p}_{\mathcal{B}^\perp}(\boldsymbol{\zeta}_i),\mathbf{p}_{\mathcal{B}^\perp}(\boldsymbol{\zeta}_j)\rangle_{\mathcal{H}},
 \end{multline}
-
+and the elements of $\tilde{\mathbf{G}}_{\mathcal{F}}$ are inner products of the projections of the kernels in the space $\mathcal{B}$, that is,
 \begin{equation}
     \left( \tilde{\mathbf{G}}_{\mathcal{F}}\right)_{ij} = \langle \mathbf{p}_{\mathcal{B}}(\boldsymbol{\zeta}_i),\mathbf{p}_{\mathcal{B}}(\boldsymbol{\zeta}_j)\rangle_{\mathcal{H}},
 \end{equation}
-
+which means that
 \begin{equation}
     \left( \mathbf{G}_{\mathcal{F}} - \tilde{\mathbf{G}}_{\mathcal{F}}\right)_{ij} = \langle \mathbf{p}_{\mathcal{B}^\perp}(\boldsymbol{\zeta}_i),\mathbf{p}_{\mathcal{B}^\perp}(\boldsymbol{\zeta}_j)\rangle_{\mathcal{H}} \leq \varepsilon^2.
 \end{equation}
-
+The spectral norm $|| . ||_2$ is the largest absolute value of an eigenvalue of a symmetric matrix. To estimate an upper limit for this norm, it is possible to use Gershgorin circles \cite{meyer_matrix_2023}. For a matrix $\mathbf{A}$, the radiuses of the circles are calculated as 
 \begin{equation}
     r_i = \sum_{j \neq i} |a_{ij}|
 \end{equation}
+and the center of the circles are the $|a_{ii}|$. In our case, we have upper limits for the elements of the matrix $ \mathbf{G}_{\mathcal{F}} - \tilde{\mathbf{G}}_{\mathcal{F}}$, and we know that the eigenvalues are positive real numbers because the matrix is also a Gram matrix of the projections of the kernels in the space $\mathcal{B}^{\perp}$. Since the matrix is of dimension $|\mathcal{F}|\times |\mathcal{F}|$ and each element has an upper limit in its value of $\varepsilon^2$, we have the radius of the Gershgorin circles as $(|\mathcal{F}| - 1)\varepsilon^2$. The centers of those circles are also $\varepsilon^2$, so that the eigenvalues are in the interval $\left[(|\mathcal{F}| - 2)\varepsilon^2,|\mathcal{F}|\varepsilon^2\right]$, and then we have
 
 \begin{equation}
     d_{\mathcal{H}_{\kappa}}^2(f_{\mathcal{H}_\kappa},g)  \leq \varepsilon^2|\mathcal{F}| ||\boldsymbol{\omega}||^2_2,
 \end{equation}
+which gives us $||f-g||_{\infty} \leq \varepsilon\sqrt{|\mathcal{F}|} ||\boldsymbol{\omega}||_2$ and means that the upper limit of a difference between $f_{\mathcal{H}_\kappa}$ and $g$ is proportional to $\varepsilon$.
 
-\section{Escolha de $\sigma$}
+\section{Choice of $\sigma$}\label{sec:kernel_parameter}
 
-\subsection{Teoria da amostragem e projeções}
+The kernel parameter $\sigma$ must be carefully chosen because the values in the vector $\boldsymbol{\kappa}(.)$ and the matrix $\mathbf{G}$ will depend on them. The three kernel functions used in this work have the form $\kappa(\mathbf{x},\mathbf{y}) = \prod_i \phi_i\left(\frac{x_i - y_i}{\sigma}\right)$ so that if $\sigma \gg |x_i - y_i|$, we will have $\kappa(\mathbf{x},\mathbf{y}) \approx \prod_i\phi_i(0)$, and since the kernels are all normal, this means $\kappa(\mathbf{x},\mathbf{y}) \approx 1$. To choose an adequate $\sigma$, we first show how this problem is analogous to the sampling problem and then show how to estimate the spectrum of the function we are approximating.
+
+\subsection{Sampling Theory and Projections}
+
+
+Figure \ref{fig:sampling} shows the model that is commonly used to represent the sampling of an analog signal. It is composed of an antialiasing filter with impulse response $\varphi(t)$ and multiplication by a Dirac comb. This can be seen \cite{unser_sampling-50_2000} as the projection of the input signal in a basis composed of translations of the impulse response $\varphi(t - nT)$. This operation is analogous to our case of projection of the kernel mapped by an input vector in an orthonormal basis calculated from translations of the chosen kernel. In the case of sampling a function, we need an anti-aliasing filter with a passband that lets the most part of the power of the input signal to pass. In our analogy, the kernel function will work as the anti-aliasing filter and varying the kernel parameter will vary its passband.
+As in the case of the  filter, we need to compare the Fourier transform of the kernel (which is analogous to the frequency response of a filter) with the power spectral density of the input signal and guarantee that most of the signal is in the passband. To do this, we need an estimate of the spectral power of the input signal.
 
 \begin{figure}[H]
     \centering
@@ -151,44 +175,66 @@
     \label{fig:sampling}
 \end{figure}
 
-\subsection{Estimação espectral multivariada por periodograma de Lomb-Scargle}
+\subsection{Multivariate Lomb-Scargle Spectral Estimation}
 
+Spectral estimation techniques, for example, the periodogram \cite{kay_modern_1988}, usually take as input samples equally spaced. The Lomb-Scargle spectral estimation \cite{scargle_studies_1982} was created to allow for non-regularly spaced input samples, which are common in the field of astronomy. A multivariate form of this technique has been proposed \cite{seilmayer_multivariate_2020} and will be used in this work. Given a signal $y(\mathbf{x}_n)$, where the $\mathbf{x}_n \in \mathbb{R}^M, 0 \leq n \leq N_x - 1$ are irregularly spaced and $\mathbf{f}_k \in \mathbb{R}^M, 0 \leq k \leq N_{fr} -1$ previously chosen frequencies, we can calculate $y(\mathbf{x}_n)$ as
 \begin{equation}
     y(\mathbf{x}_n) = \sum_{k=0}^{N_{fr}-1} a_k \cos(2\pi \mathbf{f}^T_k\mathbf{x}_n - \tau_k^{\star}) + b_k \sin(2\pi \mathbf{f}^T_k\mathbf{x}_n - \tau_k^{\star}),
 \end{equation}
-
+where $\tau_k^{\star}$ is a parameter given by
 \begin{equation}
     \tau_k^{\star} = \frac{\sum_{n=0}^{N_x-1} \sin(2\pi \mathbf{f}_k^T\mathbf{x}(n))}{\sum_{n=0}^{N_x-1} \cos(2\pi \mathbf{f}_k^T\mathbf{x}(n))}.
 \end{equation}
 
+The parameters $a_k$ and $b_k$ are calculated in terms of $\tau_k^{\star}$ as 
 \begin{equation}
     a_k = \frac{\sum_{n=0}^{N_x-1} y(\mathbf{x}_n)\cos(2\pi \mathbf{f}_k^T\mathbf{x}_n - \tau_k^{\star})}{\sum_{n=0}^{N_x-1} \cos^2(2\pi \mathbf{f}_k^T\mathbf{x}_n - \tau_k^{\star})},
 \end{equation}
-
+and
 \begin{equation}
     b_k = \frac{\sum_{n=0}^{N_x-1} y(\mathbf{x}_n)\sin(2\pi \mathbf{f}_k^T\mathbf{x}_n - \tau_k^{\star})}{\sum_{n=0}^{N_x-1} \sin^2(2\pi \mathbf{f}_k^T\mathbf{x}_n - \tau_k^{\star})}.
 \end{equation}
+% The $\tau_k^{\star}$ is calculated as
+% \begin{equation}
+%     \tau_k^{\star} = \frac{\sum_{n=0}^{N_x-1} \sin(2\pi \mathbf{f}_k^T\mathbf{x}(n))}{\sum_{n=0}^{N_x-1} \cos(2\pi \mathbf{f}_k^T\mathbf{x}(n))}.
+% \end{equation}
+With this frequency estimation, it is possible to choose the kernel parameter $\sigma$ as explained in the last section, that is, choosing $\sigma$ so that the most part (for example, 90 percent) of the power spectral density of the input signal is inside a 3dB band of the Fourier transform of the kernel.
 
-\section{Escolha de $\rho$}
+\section{Choice of $\rho$}
 
+We know from Section \ref{sec:gsklms}, that 
 \begin{equation}
     ||\kappa(\mathbf{x},.)||^2 - ||p_{\mathcal{B}}(\mathbf{x})||^2 = ||p_{\mathcal{B}^\perp}(\mathbf{x})||^2 \leq \varepsilon^2,
 \end{equation}
-
+and that
 \begin{equation}
     p_{\mathcal{B}}(\mathbf{x}) = \mathbf{H}\boldsymbol{\kappa}(\mathbf{x}).
 \end{equation}
-
+Using $\mathbf{H}^{\top}\mathbf{H} = \mathbf{G}^{-1}$ and the fact that we are using normalised kernels, we get
 \begin{equation}
     1 - \boldsymbol{\kappa}^{\top}(\mathbf{x})\mathbf{G}^{-1}\boldsymbol{\kappa}(\mathbf{x}) \leq \varepsilon^2.
 \end{equation}
-
+We then get 
 \begin{equation}
     \boldsymbol{\kappa}^{\top}(\mathbf{x})\mathbf{G}^{-1}\boldsymbol{\kappa}(\mathbf{x}) \geq 1 - \varepsilon^2.
 \end{equation}
+Since we need $\rho$ to calculate $\boldsymbol{\kappa}(\mathbf{x})$ and $\mathbf{G}^{-1}$, the inequality above is a function of $\rho$. It is needed, then, to choose
+this parameter so that the inequality is still valid.
 
-\section{Escolha de $\mu$}
+% which is a function of $\mathbf{x} \in \mathcal{X}$, so that if we find the minimum
+% \begin{equation}
+%     \min_{\mathbf{x} \in \mathcal{X}} \boldsymbol{\kappa}^{\top}(\mathbf{x})\mathbf{G}^{-1}\boldsymbol{\kappa}(\mathbf{x}),
+% \end{equation}
+% and it is still greater than $1-\varepsilon^2$, we know that the parameters are well chosen. 
+% One might say that this is not a function of $\rho$, but it appears in the dictionary that is needed to calculate 
+% $\boldsymbol{\kappa}(\mathbf{x})$ and $\mathbf{G}^{-1}$.
 
+In the cases of tensor products of sincs and tensor products of B-Splines, we know that the choice $\rho = \sigma$ gives us an orthonormal basis of the kernels mapped by the vectors in the dictionary. This is a good choice because this lowers the computational cost since in this case $\mathbf{H}$ reduces to the identity matrix.
+
+\section{Stochastic Analysis and Choice of $\mu$}\label{sec:stochastic}
+
+The objectives of this section are two: to obtain limits for the step parameter $\mu$ and to obtain relations that show us the variation of the Mean-Squared-Deviation 
+and the Excess-Mean-Squared-Error of the filter along time. The equations of the filter are
 \begin{align}
     (\boldsymbol{\kappa}(\mathbf{x}(n)))_i &= \kappa(\mathbf{x}(n),\mathbf{r}_i)\\
     \tilde{\mathbf{p}}_{\mathcal{B}}(n) &= \mathbf{H}\boldsymbol{\kappa}(\mathbf{x}(n))\\
@@ -197,37 +243,50 @@
     \mathbf{w}(n) &= \mathbf{w}(n-1) + \mu e(n) \tilde{\mathbf{p}}_{\mathcal{B}}(n).\label{eq:w_adapt}
 \end{align}
 
+Defining  the weight error vector as $\tilde{\mathbf{w}}_i = \mathbf{w}_{\mathbf{o}}-\mathbf{w}_i$, where $\mathbf{w}_{\mathbf{o}}$ is the optimum filter in the mean square sense, 
+that is $d(n) = \mathbf{w}_{\mathbf{o}}^\top\mathbf{p}_{\mathcal{B}}(n) + v(n) $, where $v(n)$ is a zero mean white gaussian noise, the Mean-Squared-Deviation is defined as
 \begin{equation}
-    MSD \triangleq \lim_{n\rightarrow \infty} E || \tilde{\mathbf{w}}(n) ||^2
+    \text{MSD} \triangleq \lim_{n\rightarrow \infty} E || \tilde{\mathbf{w}}(n) ||^2
+\end{equation}
+and the Excess-Mean-Squared-Error is defined as 
+\begin{equation}
+    \text{EMSE} \triangleq \lim_{n\rightarrow \infty} E | e_a(n) |^2, 
+\end{equation}
+where the a priori error is defined as $e_a(n) = \tilde{\mathbf{w}}^\top(n-1)\tilde{\mathbf{p}}_{\mathcal{B}}(n)$. We can rewrite this last equation as 
+\begin{equation}
+    \text{EMSE} = \lim_{n\rightarrow \infty} E \left[\tilde{\mathbf{w}}^\top(n-1)\tilde{\mathbf{p}}_{\mathcal{B}}(n)\tilde{\mathbf{p}}^\top_{\mathcal{B}}(n)\tilde{\mathbf{w}}(n-1)\right],\label{eq:emse_wppw} 
 \end{equation}
 
+\subsection{Assumptions}
+
+Following \cite{al-naffouri_transient_2003}, we must make a few assumptions (approximations) to continue our analysis:
+\begin{itemize}
+    \item The noise $v(n)$ is iid, zero mean and is independent of $\mathbf{x}(n)$;
+    \item The input vector $\mathbf{x}(n)$ is iid.
+\end{itemize}
+
+With this last assumption and \eqref{eq:emse_wppw} we get
 \begin{equation}
-    EMSE \triangleq \lim_{n\rightarrow \infty} E | e_a(n) |^2, 
+    \text{EMSE} = \lim_{n\rightarrow \infty} E \left[\tilde{\mathbf{w}}^\top(n-1)\mathbf{R}_{pp}\tilde{\mathbf{w}}(n-1)\right],\label{eq:emse_wRw} 
 \end{equation}
-
+where $\mathbf{R}_{pp} = E\left[ \tilde{\mathbf{p}}_{\mathcal{B}}(n)\tilde{\mathbf{p}}^\top_{\mathcal{B}}(n) \right]$.
+The definition of $\text{MSD}$ can also be written as
 \begin{equation}
-    EMSE = \lim_{n\rightarrow \infty} E \left[\tilde{\mathbf{w}}^\top(n-1)\tilde{\mathbf{p}}_{\mathcal{B}}(n)\tilde{\mathbf{p}}^\top_{\mathcal{B}}(n)\tilde{\mathbf{w}}(n-1)\right],\label{eq:emse_wppw} 
+    \text{MSD} = \lim_{n\rightarrow \infty} E \left[\tilde{\mathbf{w}}^\top(n-1)\mathbf{I}\tilde{\mathbf{w}}(n-1)\right], 
 \end{equation}
+so that we can write these quadratic forms generically as $E \left[\tilde{\mathbf{w}}^\top(n-1)\boldsymbol{\Xi}\tilde{\mathbf{w}}(n-1)\right]$, where, 
+for the $\text{EMSE}$, $\boldsymbol{\Xi} = \mathbf{R}_{pp}$, and for the $\text{MSD}$ $\boldsymbol{\Xi} = \mathbf{I}$.
 
-\subsection{Premissas}
-
-\begin{equation}
-    EMSE = \lim_{n\rightarrow \infty} E \left[\tilde{\mathbf{w}}^\top(n-1)\mathbf{R}_{pp}\tilde{\mathbf{w}}(n-1)\right],\label{eq:emse_wRw} 
-\end{equation}
-
-\begin{equation}
-    MSD = \lim_{n\rightarrow \infty} E \left[\tilde{\mathbf{w}}^\top(n-1)\mathbf{I}\tilde{\mathbf{w}}(n-1)\right], 
-\end{equation}
-
+Subtracting \eqref{eq:w_adapt} from $\mathbf{w}_{\mathbf{o}}$, we get
 \begin{equation}
     \tilde{\mathbf{w}}(n) = \tilde{\mathbf{w}}(n-1) - \mu e(n) \tilde{\mathbf{p}}_{\mathcal{B}}(n).\label{eq:w_tilde_adapt}
 \end{equation}
-
+Multiplying from the left by $\tilde{\mathbf{w}}^\top(n)\boldsymbol{\Xi}$ we get
 \begin{multline}
     \tilde{\mathbf{w}}^\top(n)\boldsymbol{\Xi}\tilde{\mathbf{w}}(n) = \tilde{\mathbf{w}}^\top(n-1)\boldsymbol{\Xi}\tilde{\mathbf{w}}(n-1) \\- 2\tilde{\mathbf{w}}^\top(n-1)\boldsymbol{\Xi}\mu e(n)\tilde{\mathbf{p}}_{\mathcal{B}}(n) 
      \\+ \mu e(n)\tilde{\mathbf{p}}^\top_{\mathcal{B}}(n)\boldsymbol{\Xi}\mu e(n)\tilde{\mathbf{p}}_{\mathcal{B}}(n) .
 \end{multline}
-
+Writing $e(n) = \tilde{\mathbf{w}}^{\top}(n-1)\tilde{\mathbf{p}}_{\mathcal{B}}(n) + v(n)$, we have
 \begin{multline}
     \tilde{\mathbf{w}}^\top(n)\boldsymbol{\Xi}\tilde{\mathbf{w}}(n) = \tilde{\mathbf{w}}^\top(n-1)\boldsymbol{\Xi}\tilde{\mathbf{w}}(n-1)\\-
     2\mu\tilde{\mathbf{w}}^\top(n-1)\boldsymbol{\Xi}\tilde{\mathbf{p}}_{\mathcal{B}}(n)\tilde{\mathbf{p}}_{\mathcal{B}}^\top(n)\tilde{\mathbf{w}}(n-1) \\-
@@ -237,92 +296,97 @@
     \mu^2 v^2(n)\tilde{\mathbf{p}}^\top_{\mathcal{B}}(n)\boldsymbol{\Xi}\tilde{\mathbf{p}}_{\mathcal{B}}(n).\label{eq:wSw}
 \end{multline}
 
-\subsection{Estabilidade na média}
-
+\subsection{Mean Stability}
+Substituting the error into \eqref{eq:w_tilde_adapt}, taking the expectation and using the assumptions, we get
 \begin{equation}
     E\left[\tilde{\mathbf{w}}(n)\right] = E\left[ \left(\mathbf{I} - \mu \tilde{\mathbf{p}}_{\mathcal{B}}\tilde{\mathbf{p}}^\top_{\mathcal{B}} \right) \right] E\left[\tilde{\mathbf{w}}(n-1)\right].
 \end{equation}
-
+For this equation to be stable, we need
 \begin{equation}
     \mu = \frac{2}{\lambda_{max}},
 \end{equation}
+where $\lambda_{max}$ is the largest eigenvalue of $\mathbf{R}_{pp} = E\left[ \tilde{\mathbf{p}}_{\mathcal{B}}\tilde{\mathbf{p}}^\top_{\mathcal{B}} \right]$.
 
-\subsection{Comportamento médio quadrático}
-
+\subsection{Mean Square Behavior}
+Taking the expectation of \eqref{eq:wSw} and using the assumptions, we get
 \begin{multline}
     E\left[ \tilde{\mathbf{w}}^\top(n)\boldsymbol{\Xi}\tilde{\mathbf{w}}(n)\right] = E\left[ \tilde{\mathbf{w}}^\top(n-1)\boldsymbol{\Xi}\tilde{\mathbf{w}}(n-1) \right]\\
     - 2\mu E\left[ \tilde{\mathbf{w}}^\top(n-1)\boldsymbol{\Xi}\tilde{\mathbf{p}}_{\mathcal{B}}(n)\tilde{\mathbf{p}}_{\mathcal{B}}^\top(n)\tilde{\mathbf{w}}(n-1) \right]\\
     +\mu^2 E\left[\tilde{\mathbf{w}}^{\top}(n-1)\tilde{\mathbf{p}}_{\mathcal{B}}(n)\tilde{\mathbf{p}}^\top_{\mathcal{B}}(n)\boldsymbol{\Xi}\tilde{\mathbf{p}}_{\mathcal{B}}(n)\tilde{\mathbf{p}}_{\mathcal{B}}^\top(n)\tilde{\mathbf{w}}(n-1)\right]\\
     +\mu^2 \sigma_{v}^2E\left[ \tilde{\mathbf{p}}^\top_{\mathcal{B}}(n)\boldsymbol{\Xi}\tilde{\mathbf{p}}_{\mathcal{B}}(n) \right].\label{eq:EwSw}
 \end{multline}
-
+Using the $\operatorname{vec}$ operator and the equality
 \begin{equation*}
     \operatorname{vec}\left(\mathbf{U}\boldsymbol{\Xi}\mathbf{V}\right) = \mathbf{V}^\top\otimes\mathbf{U}\operatorname{vec}\left(\boldsymbol{\Xi}\right),
 \end{equation*}
-
+we can write \eqref{eq:EwSw} as
 \begin{equation}
     E\left[ \tilde{\mathbf{w}}^\top_{\otimes^2}(n) \boldsymbol{\xi}\right] = E\left[ \tilde{\mathbf{w}}^\top_{\otimes^2}(n-1) \mathbf{F}\boldsymbol{\xi}\right] +\mu^2 \sigma_{v}^2E\left[ \tilde{\mathbf{p}}^\top_{\mathcal{B}\otimes^2}(n)\boldsymbol{\xi} \right],\label{eq:Ewkron2}
 \end{equation}
-
+where $\tilde{\mathbf{w}}^\top_{\otimes^2}(n) = \tilde{\mathbf{w}}^\top(n)\otimes \tilde{\mathbf{w}}^\top(n)$, $ \tilde{\mathbf{p}}^\top_{\mathcal{B}\otimes^2}(n) = \tilde{\mathbf{p}}^\top_\mathcal{B}(n) \otimes \tilde{\mathbf{p}}^\top_\mathcal{B}(n) $ and $\boldsymbol{\xi} = \operatorname{vec}(\boldsymbol{\Xi})$.
+In \eqref{eq:Ewkron2}, the matrix $\mathbf{F}$ is
 \begin{equation*}
     \mathbf{F} = \mathbf{I} -\mu\mathbf{A} + \mu^2\mathbf{B},
 \end{equation*}
-
+where $\mathbf{A}$ was obtained from the symmetric part (because we only need this part \cite{horn_matrix_2017}) of the second line of \eqref{eq:EwSw}
 \begin{equation*}
     \mathbf{A} = \mathbf{R}_{pp}\otimes\mathbf{I} + \mathbf{I}\otimes\mathbf{R}_{pp},
 \end{equation*}
-
+and the matrix $\mathbf{B}$ is obtained from the third line of \eqref{eq:EwSw}
 \begin{equation*}
     \mathbf{B} = E\left[ \tilde{\mathbf{p}}_\mathcal{B}(n)\tilde{\mathbf{p}}^\top_\mathcal{B}(n) \otimes \tilde{\mathbf{p}}_\mathcal{B}(n)\tilde{\mathbf{p}}^\top_\mathcal{B}(n)\right].
 \end{equation*}
-
+Since $\mathbf{F}$ does not depend on the same expectation as $\tilde{\mathbf{w}}^\top_{\otimes^2}(n)$ or $\tilde{\mathbf{p}}^\top_{\mathcal{B}\otimes^2}(n)$ and $\boldsymbol{\xi}$ is fixed, we can write
 \begin{equation}
     E\left[ \tilde{\mathbf{w}}^\top_{\otimes^2}(n)\right] \boldsymbol{\xi} = E\left[ \tilde{\mathbf{w}}^\top_{\otimes^2}(n-1) \right]\mathbf{F}\boldsymbol{\xi} +\mu^2 \sigma_{v}^2E\left[ \tilde{\mathbf{p}}^\top_{\mathcal{B}\otimes^2}(n) \right]\boldsymbol{\xi}.
 \end{equation}
-
+Removing the common term $\boldsymbol{\xi}$ from the equation and transposing the equation, we obtain the recursion
 \begin{equation}
     E\left[ \tilde{\mathbf{w}}_{\otimes^2}(n)\right]  = \mathbf{F}E\left[ \tilde{\mathbf{w}}_{\otimes^2}(n-1) \right] +\mu^2 \sigma_{v}^2E\left[ \tilde{\mathbf{p}}_{\mathcal{B}\otimes^2}(n) \right],\label{eq:Ewkron2_last}
 \end{equation}
+that we can iterate to obtain $\tilde{\mathbf{w}}^\top_{\otimes^2}(n)$. Multiplying by $\boldsymbol{\Xi} = \operatorname{vec}(\mathbf{I})$, we have the $\text{MSD}$ and multiplying by $\boldsymbol{\Xi} = \operatorname{vec}(\mathbf{R}_{pp})$ we have the $\text{EMSE}$ at each $n$.
 
-\subsection{Estabilidade média quadrática}
+\subsection{Mean Square Stability}
 
+In \cite{al-naffouri_transient_2003}, it is shown that, to guarantee stability in the mean-square sense, we need
 \begin{equation}
     0<\mu<\min \left\{\frac{1}{\lambda_{max}(\mathbf{A}^{-1}\mathbf{B})},\frac{1}{\max\left\{\lambda(\mathbf{L})\in\mathbb{R}^{+}\right\}} \right\}
 \end{equation}
-
+where
 \begin{equation}
     \mathbf{L} = \begin{bmatrix}
         \mathbf{A}/2 & -\mathbf{B}/2\\
         \mathbf{I} & \mathbf{0}
     \end{bmatrix}.
 \end{equation}
-
+So, stability in the mean and mean square sense is guaranteed by
 \begin{equation}
     \mu<\min \left\{\frac{2}{\lambda_{max}(\mathbf{R}_{pp})},\frac{1}{\lambda_{max}(\mathbf{A}^{-1}\mathbf{B})},\frac{1}{\max\left\{\lambda(\mathbf{L})\in\mathbb{R}^{+}\right\}} \right\}.
 \end{equation}
 
-\subsection{Performance em estado estacionário}
+\subsection{Steady-State Performance}
 
+To calculate the steady-state performance, we need to obtain the value of the limit of \eqref{eq:Ewkron2_last}, that is
 \begin{equation}
     \lim_{n\rightarrow\infty} E\left[ \tilde{\mathbf{w}}_{\otimes^2}(n)\right] = \lim_{n\rightarrow\infty} E\left[ \tilde{\mathbf{w}}_{\otimes^2}(n-1)\right] = E\left[ \tilde{\mathbf{w}}_{\otimes^2}(\infty)\right].
 \end{equation}
-
+Substituting the limit into \eqref{eq:Ewkron2_last}, we have
 \begin{equation}
     E\left[ \tilde{\mathbf{w}}_{\otimes^2}(\infty)\right]  = \mathbf{F}E\left[ \tilde{\mathbf{w}}_{\otimes^2}(\infty) \right] +\mu^2 \sigma_{v}^2E\left[ \tilde{\mathbf{p}}_{\mathcal{B}\otimes^2}(\infty) \right],
 \end{equation}
-
+putting the terms that depend on $E\left[ \tilde{\mathbf{w}}_{\otimes^2}(\infty)\right]$ we get
 \begin{equation}
     (\mathbf{I} - \mathbf{F})E\left[ \tilde{\mathbf{w}}_{\otimes^2}(\infty)\right]  =\mu^2 \sigma_{v}^2E\left[ \tilde{\mathbf{p}}_{\mathcal{B}\otimes^2}(\infty) \right],
 \end{equation}
-
+and solving this equation for $E\left[ \tilde{\mathbf{w}}_{\otimes^2}(\infty)\right]$, we obtain
 \begin{equation}
     E\left[ \tilde{\mathbf{w}}_{\otimes^2}(\infty)\right]  =\mu^2 \sigma_{v}^2(\mathbf{I} - \mathbf{F})^{-1}E\left[ \tilde{\mathbf{p}}_{\mathcal{B}\otimes^2}(\infty) \right].
 \end{equation}
-
+With this result, we can estimate
 \begin{equation}
-    MSD = E\left[ \tilde{\mathbf{w}}^\top_{\otimes^2}(\infty)\right]\operatorname{vec}(\mathbf{I})
+    \text{MSD} = E\left[ \tilde{\mathbf{w}}^\top_{\otimes^2}(\infty)\right]\operatorname{vec}(\mathbf{I})
 \end{equation}
-
+and
 \begin{equation}
-    EMSE = E\left[ \tilde{\mathbf{w}}^\top_{\otimes^2}(\infty)\right]\operatorname{vec}(\mathbf{R}_{pp}).
+    \text{EMSE} = E\left[ \tilde{\mathbf{w}}^\top_{\otimes^2}(\infty)\right]\operatorname{vec}(\mathbf{R}_{pp}).
 \end{equation}

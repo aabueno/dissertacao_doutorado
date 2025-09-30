@@ -58,6 +58,31 @@
 \usepackage{color}				% Controle das cores
 \usepackage{graphicx}			% Inclusão de gráficos
 \usepackage{microtype} 			% para melhorias de justificação
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{float}
+\usepackage{subcaption}
+\usepackage{tikz}
+\usepackage{tikz-3dplot}
+%\usetikzlibrary{arrows.meta} % for arrow size
+\usetikzlibrary{3d} % for canvas is
+\usepackage{circuitikz}
+\usetikzlibrary{arrows,calc,positioning,fit}
+\usetikzlibrary{angles,quotes} % for pic (angle labels)
+\usetikzlibrary{arrows.meta}
+\usetikzlibrary{backgrounds}
+%\usepgfplotslibrary{patchplots}
+%\usepgfplotslibrary{fillbetween}
+\newcommand{\mixer}[2]
+{  % #1 = reference coordinate, #2 = name
+  \node[draw, thick, shape=circle, minimum size=24pt, at={#1}](#2){};
+  \draw[rotate=45,line width=0.5pt] (#2.center)+(0,-12pt) -- +(0,12pt);
+  \draw[rotate=-45,line width=0.5pt] (#2.center)+(0,-12pt) -- +(0,12pt);
+}
+\newcommand*{\vv}[1]{\vec{\mkern0mu#1}} % aligned vector arrow
+\tikzstyle{axis}=[->,thick,line cap=round]
+\newtheorem{theorem}{Theorem}
+
 % ---
 		
 % ---
@@ -155,20 +180,20 @@
 % Possibilita criação de Quadros e Lista de quadros.
 % Ver https://github.com/abntex/abntex2/issues/176
 %
-\newcommand{\quadroname}{Quadro}
-\newcommand{\listofquadrosname}{Lista de quadros}
+% \newcommand{\quadroname}{Quadro}
+% \newcommand{\listofquadrosname}{Lista de quadros}
 
-\newfloat[chapter]{quadro}{loq}{\quadroname}
-\newlistof{listofquadros}{loq}{\listofquadrosname}
-\newlistentry{quadro}{loq}{0}
+% \newfloat[chapter]{quadro}{loq}{\quadroname}
+% \newlistof{listofquadros}{loq}{\listofquadrosname}
+% \newlistentry{quadro}{loq}{0}
 
-% configurações para atender às regras da ABNT
-\setfloatadjustment{quadro}{\centering}
-\counterwithout{quadro}{chapter}
-\renewcommand{\cftquadroname}{\quadroname\space} 
-\renewcommand*{\cftquadroaftersnum}{\hfill--\hfill}
+% % configurações para atender às regras da ABNT
+% \setfloatadjustment{quadro}{\centering}
+% \counterwithout{quadro}{chapter}
+% \renewcommand{\cftquadroname}{\quadroname\space} 
+% \renewcommand*{\cftquadroaftersnum}{\hfill--\hfill}
 
-\setfloatlocations{quadro}{hbtp} % Ver https://github.com/abntex/abntex2/issues/176
+% \setfloatlocations{quadro}{hbtp} % Ver https://github.com/abntex/abntex2/issues/176
 % ---
 
 % --- 
@@ -433,9 +458,9 @@ Os agradecimentos principais são direcionados ...
 % ---
 % inserir lista de quadros
 % ---
-\pdfbookmark[0]{\listofquadrosname}{loq}
-\listofquadros*
-\cleardoublepage
+% \pdfbookmark[0]{\listofquadrosname}{loq}
+% \listofquadros*
+% \cleardoublepage
 % ---
 
 % ---

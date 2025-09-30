@@ -1,82 +1,145 @@
-\chapter{Introdução} \label{cap:introducao}
+\chapter{Introduction}
 
+An important application of filters is, given a noisy signal as input, to extract the best estimate of the desired information \cite{haykin_adaptive_1996}. 
+When we know the correlation between the desired signal and noise, we can design fixed parameter filters to do the job. Among the fixed parameter filters, the 
+Wiener Filter \cite{haykin_adaptive_1996,sayed_adaptive_2008,manolakis_statistical_2005} has a special space because it is an optimum estimator in the sense of 
+mean-square error. When we do not know the correlation between the signal and noise or when we are working on a non-stationary environment, we can use an adaptive 
+filter.
+
+Adaptive filters are used in many problems, such as channel equalization, active noise reduction, series prediction, and system identification \cite{haykin_adaptive_1996,sayed_adaptive_2008,manolakis_statistical_2005}.
+ Many types of adaptive filters are known, such as the Recursive-Least-Squares (RLS) filter, the Affine Projections filter, and the Least-Mean-Square (LMS) filter 
+ \cite{haykin_adaptive_1996,sayed_adaptive_2008,manolakis_statistical_2005}. The latter uses the gradient descent algorithm to minimize the error between the output of 
+ the filter and the desired signal. Its equations, which must be calculated for each sample, are
 \begin{align}
     y(n) &= \mathbf{w}^{\top}(n-1)\mathbf{x}(n),\\
     e(n) &= d(n) - y(n),\\
     \mathbf{w}(n) &= \mathbf{w}(n-1) + \mu e(n)\mathbf{x}(n),
 \end{align}
+where $y(n)$ is the filter output, $\mathbf{w}(n)$ is a vector with the filter coefficients, $\mathbf{x}(n)$ is the filter input signal, $d(n)$ is the desired signal and $e(n)$ is 
+the error. The parameter $\mu$ is known as the adaptation step and must be chosen so that the adaptation period and the mean-square error are adequate to the problem 
+in question.
 
-\section{Espaços de Hilbert do \textit{kernel} reprodutivo}
+Nonlinear forms of adaptive filters have appeared in the literature. These filters can deal with the same problems as their linear counterparts, but can deal with nonlinearities. 
+For example, in the case of nonlinear active noise reduction, the nonlinearities introduced by the amplifier and loudspeaker might need to be suppressed by the filter. To do 
+that, the filter must have nonlinear parts to be adapted, which increases its complexity. Several ways of introducing nonlinearities have been suggested. 
+Nonlinear adaptive filters based on Volterra series, which have the advantage of preserving linearity in the parameters, have been proposed \cite{taiho_koh_second-order_1985}, but these filters have the disadvantage of having too many coefficients.
+Splines were used in \cite{scarpiniti_nonlinear_2013} to create a filter with a linear part and a nonlinear part, made of a spline, whose control points are adapted. This filter has few coefficients to be adapted, but the optimization needed is nonconvex.
+Kernel Adaptive Filters (KAF) \cite{principe_kernel_2010} use the theory of Reproducing Kernel Hilbert Spaces and Positive Definite Kernels to deal with nonlinearities, and lead to good performance but require dictionaries and strategies to restrict their memory usage to a finite size.
 
+This paper proposes the use of a fixed dictionary, based on a Cartesian grid for KAFs. The fixed dictionary has several advantages, most notably a fixed complexity and smaller memory requirements. In the remainder of this section we explain in more detail the advantages of the proposed algorithm, after some preliminary definitions.
+
+\section{Reproducing Kernel Hilbert Spaces}
+
+A function $\kappa(.,.), \mathcal{X}\times\mathcal{X}\rightarrow\mathbb{R}$ where $\mathcal{X} \subset \mathbb{R}^M$ is called a Positive Definite Kernel if, for any 
+finite set of elements $\{\mathbf{x}_1,\mathbf{x}_2\,\dots,\mathbf{x}_n\} \in \mathcal{X}$, the matrices whose entries are $(\kappa(\mathbf{x}_i,\mathbf{x}_j))$, 
+$i,j = \{1,2,\dots,n\}$, are nonnegative definite. It may be confusing to use the term Positive Definite Kernel when it creates nonnegative definite matrices, but this 
+is the usual definition \cite{paulsen_introduction_2016}.
+
+One form of characterizing a function as a Positive Definite Kernel is via Bochner's theorem \cite{wendland_scattered_2005}, which states that if a function $f(.), \mathbb{R}^M\rightarrow\mathbb{R}$ 
+has a nonnegative Fourier transform, then $f(.-.)$ is a Positive Definite Kernel and the converse is also true, that is, if we have a nonnegative definite matrix with 
+entries $f(\mathbf{x}_i-\mathbf{x}_j)$, then $f(.)$ must have a nonnegative Fourier transform.
+
+A Reproducing Kernel Hilbert Space $\mathcal{H}$ (RKHS) is a Hilbert Space (a complete inner product space) of functions on $\mathcal{X} \subset \mathbb{R}^M$ with an 
+evaluation functional $E_{\mathbf{x}},\mathcal{H} \rightarrow \mathbb{R}$ defined as $E_{\mathbf{x}}(f) = f(\mathbf{x})$. The Riesz representation theorem \cite{riesz_functional_2009} states that every 
+linear functional on a Hilbert space can be represented as an inner product with an unique vector in $\mathcal{H}$, and so is the case of the evaluation functional. 
+This way, the evaluation functional can be written as $E_{\mathbf{x}}(f) = \langle \kappa(\mathbf{x},.),f(.) \rangle_\mathcal{H} = f(\mathbf{x})$, where the function $\kappa(\mathbf{x},.)$ 
+is known as the reproducing kernel for the point $\mathbf{x} \in \mathcal{X}$. The function $\kappa(.,.)$ is known as the reproducing kernel of $\mathcal{H}$ and the property
+$\langle \kappa(\mathbf{x},.),f(.) \rangle_\mathcal{H} = f(\mathbf{x})$ is known as the reproducing property of the kernel $\kappa(.,.)$ \cite{paulsen_introduction_2016}. 
+
+It is possible to show \cite{paulsen_introduction_2016} that if $\kappa(.,.)$ is the kernel of an RKHS, then $\kappa(.,.)$ is a Positive Definite Kernel. Also, if $\kappa(.,.)$ 
+is a Positive Definite Kernel, we can show that there is a RKHS whose reproducing kernel is $\kappa(.,.)$ \cite{paulsen_introduction_2016}. We also use the fact that the 
+set 
 \begin{equation}
     \mathcal{H}_{\kappa} = \operatorname{span}\{\kappa(\mathbf{x},.), \forall \mathbf{x}\in \mathbb{R}^M\},
 \end{equation}
+is dense in $\mathcal{H}$ \cite{aronszajn_theory_1950}.
 
-\section{Filtros adaptativos \textit{kernel}}
+\section{Kernel Adaptive Filters}
 
+Kernel methods \cite{scholkopf_learning_2002} use the theory of Positive Definite Kernels to transform a linear method based on inner products into a nonlinear one. 
+To achieve this, the input vectors $\mathbf{x}_i$ are mapped to functions that belong to the RKHS as in
 \begin{equation}
     \mathbf{x}_i \rightarrow \kappa(\mathbf{x}_i,.),
 \end{equation}
-
-
+and the inner products are calculated using these functions and the reproducing property of the kernel
 \begin{equation}
     \langle \kappa(\mathbf{x}_i,.), \kappa(\mathbf{x}_j,.) \rangle_{\mathcal{H}} = \kappa(\mathbf{x}_i, \mathbf{x}_j).
 \end{equation}
 
+The use of kernels to create adaptive filters started with a version of the KRLS \cite{engel_kernel_2004} and then the Kernel-Least-Mean-Square (KLMS) \cite{liu_kernel_2008}, 
+which gives the foundations of our work. As proposed in \cite{liu_kernel_2008}, the KLMS is defined by the following equations\footnote{By \eqref{eq:klms_w} we mean that $\mathbf{w}(n-1)$ is a function which applied to a vector $\mathbf{x}(n)$ results in $y(n)$ as in \eqref{eq:klms_y}}
 \begin{align}
     \mathbf{w}(n-1) &= \sum_{i=1}^{n-1}\mu e(i)\kappa(\mathbf{x}(i),.)\label{eq:klms_w}\\
     y(n) &= \sum_{i=1}^{n-1}\mu e(i)\kappa(\mathbf{x}(i),\mathbf{x}(n))\label{eq:klms_y}\\
     e(n) &= d(n) - y(n)\\
     \mathbf{w}(n) &= \mathbf{w}(n-1) +\mu e(n)\kappa(\mathbf{x}(n),.).
 \end{align}
+We notice from these equations that the number of evaluations of kernel functions increases with $n$, which makes this filter impractical if used for many iterations. 
+To avoid this memory growth, sparsification of dictionaries techniques were introduced.
 
-\section{Esparsificação de dicionários}
+\section{Sparsification of Dictionaries}
 
+In these techniques, we create a set of input vectors with some distinctive characteristics known as a dictionary $\mathcal{D}$. Since we do not put every input vector 
+in the dictionary, we expect fewer evaluations of the kernel function compared with the KLMS with no sparsification of dictionary. The first of these techniques proposed 
+was the Novelty Criterion \cite{platt_resource-allocating_1991}. In the Novelty Criterion, we include an input vector in the dictionary if
 \begin{equation}
     \min_{\mathbf{r}_i \in \mathcal{D}} ||\mathbf{x}(n) - \mathbf{r}_i||>\varepsilon_{NC},
 \end{equation}
-
+where $\varepsilon_{NC}$ is a chosen parameter. The Coherence Criterion \cite{richard_online_2009}, in turn, uses
 \begin{equation}
     \min_{\mathbf{r}_i \in \mathcal{D}} \kappa(\mathbf{r}_i,\mathbf{x}(n)) < \varepsilon_{CC},
 \end{equation}
+where $\varepsilon_{CC}$ is again a chosen parameter. Quantized KLMS (QKLMS) \cite{badong_chen_quantized_2012} uses the same criterion as the Novelty Criterion to put 
+vectors in the dictionary, but adapts the filter weight relative to the closest vector in the dictionary when the input vector is not included. Random Fourier Features (RFF-KLMS) \cite{bouboulis_efficient_2016} uses an 
+approximation of the kernel using the theory of random Fourier features. The Approximate Linear Dependence only includes a new input vector in the dictionary if the kernel 
+mapped from this vector is not close to a linear combination of the kernels mapped by the vectors in the dictionary \cite{engel_kernel_2004}. The latter technique is closely related with the GS-KLMS (Gram-Schmidt KLMS) technique, discussed next.
 
+\section{GS-KLMS}\label{sec:gsklms}
 
-
-\section{GS-KLMS}
-
+In the GS-KLMS \cite{bueno_gram-schmidt-based_2020}, the input vectors $\mathbf{x}(n) \in \mathcal{X} \subset \mathbb{R}^M$ are first mapped to a kernel function 
+$\kappa(\mathbf{x}(n),.) \in \mathcal{H}$ and then this kernel is projected in a vector subspace $\mathcal{B}\subset \mathcal{H}$. This vector subspace 
+$\mathcal{B}$ is spanned by an orthonormal basis $\mathbf{B} = \{\boldsymbol{\beta}_1, \;\; \boldsymbol{\beta}_2, \;\; \dots, \;\; \boldsymbol{\beta}_N\}$. The fact that 
+$\mathbf{B}$ is an orthonormal basis makes the calculation of the projections easy, since the projection norm in each direction $\boldsymbol{\beta}_i$ can be calculated 
+as the inner product between the kernel mapped by the input vector and $\boldsymbol{\beta}_i$. To obtain the set $\mathbf{B}$, we start with the input vectors that 
+were put in the dictionary $\mathcal{D}$, map them to kernels as $\kappa(\mathbf{r}_i,.)$, and apply the Gram-Schmidt process \cite{meyer_matrix_2023}
 \begin{align}
     \boldsymbol{\beta}_1 &= \frac{\kappa(\mathbf{r}_1,.)}{||\kappa(\mathbf{r}_1,.)||},\label{eq:beta_1}\\
-    \boldsymbol{\beta}_i &= \frac{\boldsymbol{\gamma}_i}{||\boldsymbol{\gamma}_i||}, \label{eq:beta_i}\\ 
-    \boldsymbol{\gamma}_i &= \kappa(\mathbf{r}_i,.) - \sum_{j=1}^{i-1}\langle\kappa(\mathbf{r}_i,.),\boldsymbol{\beta}_j\rangle_{\mathcal{H}}\boldsymbol{\beta}_j.\label{eq:gamma_i}
+    \boldsymbol{\gamma}_i &= \kappa(\mathbf{r}_i,.) - \sum_{j=1}^{i-1}\langle\kappa(\mathbf{r}_i,.),\boldsymbol{\beta}_j\rangle_{\mathcal{H}}\boldsymbol{\beta}_j.\label{eq:gamma_i}\\
+    \boldsymbol{\beta}_i &= \frac{\boldsymbol{\gamma}_i}{||\boldsymbol{\gamma}_i||}, \label{eq:beta_i}
 \end{align}
-
+Iterating equations \eqref{eq:beta_1}, \eqref{eq:gamma_i} and \eqref{eq:beta_i}, we can show that every $\boldsymbol{\beta}_i$ is a linear combination of kernels $\kappa(\mathbf{r}_j,.)$, that is
 \begin{equation}
     \boldsymbol{\beta}_i = \sum_{j=1}^{i} h_{ij}\kappa(\mathbf{r}_j,.).
 \end{equation}
+We can group the values $h_{ij}$ in a matrix $\mathbf{H}$.
 
+To verify whether a vector must be put in the dictionary, we compare the kernel norm $||\kappa(\mathbf{x}(n),.)||$ and the norm $||\mathbf{p}_\mathcal{B}(n)||$, where $\mathbf{p}_\mathcal{B}(n)$ is the projection of $\kappa(\mathbf{x}(n),.)$ in the subspace $\mathcal{B}$. 
+First, we notice that 
 \begin{equation}
     \kappa(\mathbf{x}(n),.) = \mathbf{p}_{\mathcal{B}} + \mathbf{p}_{\mathcal{B}^{\perp}},
 \end{equation}
-
+where $\mathbf{p}_{\mathcal{B}^{\perp}}$ is the projection of $\kappa(\mathbf{x}(n),.)$ in the space orthogonal to $\mathcal{B}$, Then, we calculate the squared norm
 \begin{equation}
     ||\kappa(\mathbf{x}(n),.)||^2 = ||\mathbf{p}_\mathcal{B}||^2 + ||\mathbf{p}_{\mathcal{B}^{\perp}}||^2,
 \end{equation}
-
+since $\mathbf{p}_{\mathcal{B}}$ and $\mathbf{p}_{\mathcal{B}^{\perp}}$ are orthogonal. Since we are using only normalized kernels in this work, we can say that $||\kappa(\mathbf{x}(n),.)||^2 = \kappa(\mathbf{x}(n),\mathbf{x}(n)) = 1$ and we have
 \begin{equation}
     ||\mathbf{p}_\mathcal{B}||^2 = 1 - ||\mathbf{p}_{\mathcal{B}^{\perp}}||^2.
 \end{equation}
-
+If the norms $||\kappa(\mathbf{x}(n),.)||$ and $||\mathbf{p}_\mathcal{B}||$ are close enough, that is, if 
 \begin{equation}
     ||\mathbf{p}_{\mathcal{B}^{\perp}}||^2 < \varepsilon,
 \end{equation}
-
+where $\varepsilon$ is a chosen parameter, which means that if
 \begin{equation}
     ||\mathbf{p}_\mathcal{B}||^2 > 1 - \varepsilon^2,
 \end{equation}
-
+we do not put the input vector in the dictionary. But, if the norms are very different, that is
 \begin{equation}
     ||\mathbf{p}_\mathcal{B}||^2 < 1 - \varepsilon^2,
 \end{equation}
+we give the input vector $\mathbf{x}(n)$ a new 
+name $\mathbf{r}_i$, include it in the dictionary $\mathcal{D}$ and update the basis $\mathbf{B}$, adding a new vector $\boldsymbol{\beta}_i$ using \eqref{eq:beta_1}, \eqref{eq:gamma_i} and \eqref{eq:beta_i}.
 
 \begin{figure}
     \centering
@@ -130,6 +193,7 @@
     \label{fig:proj}
 \end{figure}
 
+We can create an adaptive filter using the projections $\mathbf{p}_{\mathcal{B}}(n)$, or, since it is easier, the vector of the coefficients of the projections 
 \begin{align}
     \tilde{\mathbf{p}}_\mathcal{B}(n) &= \begin{bmatrix}
         \langle\kappa(\mathbf{x}(n),.),\boldsymbol{\beta}_1\rangle_\mathcal{H}\\
@@ -140,14 +204,14 @@
         \langle\kappa(\mathbf{x}(n),.),\sum_{j=1}^{1}h_{1j}\kappa(\mathbf{r}_j,.)\rangle_\mathcal{H}\\
         \langle\kappa(\mathbf{x}(n),.),\sum_{j=1}^{2}h_{2j}\kappa(\mathbf{r}_j,.)\rangle_\mathcal{H}\\
         \vdots\\
-        \langle\kappa(\mathbf{x}(n),.),\sum_{j=1}^{1}h_{Nj}\kappa(\mathbf{r}_j,.)\rangle_\mathcal{H}\\
+        \langle\kappa(\mathbf{x}(n),.),\sum_{j=1}^{N}h_{Nj}\kappa(\mathbf{r}_j,.)\rangle_\mathcal{H}\\
     \end{bmatrix},      
 \end{align}
-
+which can be calculated as
 \begin{equation}
     \tilde{\mathbf{p}}_{\mathcal{B}}(n) =\mathbf{H}\boldsymbol{\kappa}(\mathbf{x}(n)),
 \end{equation}
-
+where the coefficients of $\mathbf{H}$ can be obtained from \eqref{eq:beta_1}, \eqref{eq:gamma_i} and \eqref{eq:beta_i} and the vector $\boldsymbol{\kappa}(\mathbf{x}(n))$ is
 \begin{equation}
     \boldsymbol{\kappa}(\mathbf{x}(n)) = \begin{bmatrix}
         \kappa(\mathbf{x}(n),\mathbf{r}_1)\\
@@ -156,11 +220,17 @@
         \kappa(\mathbf{x}(n),\mathbf{r}_N)\\
     \end{bmatrix}.      
 \end{equation}
-
+The adaptive filter can then be calculated as
 \begin{align}
     y(n) &= \mathbf{w}^{\top}(n-1)\tilde{\mathbf{p}}_{\mathcal{B}}(n)\\
     e(n) &= d(n) - y(n)\\
     \mathbf{w}(n) &= \mathbf{w}(n-1) + \mu e(n)\tilde{\mathbf{p}}_{\mathcal{B}}(n).
 \end{align}
 
-\section{Estrutura do trabalho}
+This algorithm works well, but still has a growing dictionary, which may lead to variable computational cost and steady-state performance.
+In the following sections we propose a new kernel adaptive filtering algorithm with fixed complexity, based on a Cartesian grid dictionary.
+
+\section{Structure of the work}
+In Section \ref{sec:grids}, we present how Cartesian grids are generated, the kernels we are using in this work, and orthonormalization procedures. After that, techniques to
+choose the parameters of the filters are presented in Section \ref{sec:choice}. Section \ref{sec:simulations} shows examples obtained with numerical simulations and the conclusions
+are in Section \ref{sec:conclusions}
